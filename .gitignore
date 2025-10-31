@@ -1,2 +1,4 @@
 /lib
 /build
+/example/test
+/example/muduo.log
