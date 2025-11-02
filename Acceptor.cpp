@@ -31,10 +31,10 @@ void Acceptor::listen()
                 m_NewConnectionCallback(cfd,addr);
             }
         }
-        if(m_test)
-        {
-            m_test();
-        }
+        // if(m_test)
+        // {
+        //     m_test();
+        // }
         ::usleep(10000);
     }
 }
