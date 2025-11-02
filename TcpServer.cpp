@@ -3,11 +3,15 @@
 #include <functional>
 #include <iostream>
 #include "Logger.h"
-TcpServer::TcpServer(uint16_t port, string addr)
+#include "EventLoop.h"
+TcpServer::TcpServer(EventLoop* loop,uint16_t port, string addr)
     : m_acceptor(new Acceptor(InetAddress(port, addr)))
+    , m_loop(loop)
+    , m_pool(new EventLoopThreadPoll(loop))
 {
+    
     m_acceptor->setConnectionCallBack(std::bind(&TcpServer::newConnection, this, _1, _2));
-    m_acceptor->setTestCallBack(std::bind(&TcpServer::testRecv, this));
+    // m_acceptor->setTestCallBack(std::bind(&TcpServer::testRecv, this));
 }
 
 TcpServer::~TcpServer()
@@ -18,11 +22,14 @@ void TcpServer::newConnection(int connfd, const InetAddress &peerAddr)
 {
     std::cout << "有新连接到达" << peerAddr.toIpPortString() << std::endl;
     m_clients.emplace(connfd, peerAddr);
+    EventLoop* ioLoop = m_pool->getNextLoop();
+    
 }
 
 void TcpServer::start()
 {
-    m_acceptor->listen();
+    m_loop->runInLoop(std::bind(&Acceptor::listen,m_acceptor.get()));
+    m_pool->start();
 }
 
 void TcpServer::testRecv()
@@ -58,4 +65,9 @@ void TcpServer::testRecv()
             it = m_clients.erase(it);
         }
     }
+}
+
+void TcpServer::setThreadNum(int num)
+{
+    m_pool->threadnum(num);
 }

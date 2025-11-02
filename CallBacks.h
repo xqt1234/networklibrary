@@ -10,4 +10,5 @@ using EventCallBack = std::function<void()>;
 using ConnectionCallBack = std::function<void(const TcpConnectionPtr&)>;
 using CloseCallBack = std::function<void(const TcpConnectionPtr&)>;
 using WriteCompleteCallBack = std::function<void(const TcpConnectionPtr&)>;
+using ReadEventCallBack = std::function<void()>;
 
