@@ -26,7 +26,7 @@ public:
     void start();
     void testRecv();
     void setThreadNum(int num);
-    void setConnectionCallBack(ConnectionCallBack& cb)
+    void setConnectionCallBack(const ConnectionCallBack& cb)
     {
         m_ConnectionCallBack = cb;
     }

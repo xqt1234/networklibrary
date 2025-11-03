@@ -26,6 +26,7 @@ public:
     void loop();
     void queueInLoop(Functor func);
     void runInLoop(Functor func);
+    void updateChannel(Channel* channel);
 private:
     bool isInLoopThread()
     {
