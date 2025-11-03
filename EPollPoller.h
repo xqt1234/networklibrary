@@ -19,4 +19,6 @@ public:
     bool hasChannel(Channel* channel) const;
     void fillActiveChannels(int numEvents,
                                      ChannelList* activeChannels);
+    void updateChannel(Channel* channel);
+    void update(int option,Channel* channel);
 };

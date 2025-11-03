@@ -51,6 +51,11 @@ void EventLoop::runInLoop(Functor func)
     }
 }
 
+void EventLoop::updateChannel(Channel *channel)
+{
+    m_poller->updateChannel(channel);
+}
+
 void EventLoop::wakeup()
 {
     uint64_t one = 1;

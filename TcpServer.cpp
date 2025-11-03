@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Logger.h"
 #include "EventLoop.h"
+#include "TcpConnection.h"
 TcpServer::TcpServer(EventLoop* loop,uint16_t port, string addr)
     : m_acceptor(new Acceptor(InetAddress(port, addr)))
     , m_loop(loop)
@@ -23,7 +24,9 @@ void TcpServer::newConnection(int connfd, const InetAddress &peerAddr)
     std::cout << "有新连接到达" << peerAddr.toIpPortString() << std::endl;
     m_clients.emplace(connfd, peerAddr);
     EventLoop* ioLoop = m_pool->getNextLoop();
-    
+    TcpConnectionPtr conn(new TcpConnection(ioLoop,connfd,peerAddr));
+    conn->setConnectionCallBack(m_ConnectionCallBack);
+    ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished,conn));
 }
 
 void TcpServer::start()
