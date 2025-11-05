@@ -5,8 +5,9 @@
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::kWriteEvent = EPOLLOUT;
-Channel::Channel(int fd)
+Channel::Channel(int fd,EventLoop* loop)
     : m_fd(fd)
+    , m_loop(loop)
 {
 }
 
@@ -68,7 +69,14 @@ void Channel::handleEventWithGuard()
 
 void Channel::update()
 {
+    m_addedToLoop = true;
     m_loop->updateChannel(this);
+}
+
+void Channel::remove()
+{
+    m_addedToLoop = false;
+    m_loop->removeChannel(this);
 }
 
 void Channel::tie(const std::shared_ptr<void> &obj)

@@ -10,6 +10,9 @@ Socket::Socket()
     if(m_sockfd < 0)
     {
         LOG_FATAL("创建socket错误");
+    }else
+    {
+        LOG_INFO("创建socket成功{}",m_sockfd);
     }
 }
 

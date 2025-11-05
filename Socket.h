@@ -16,4 +16,5 @@ public:
     void setReusePort(bool on);
     void setKeepAlive(bool on);
     void shutdownWrite();
+    int fd(){return m_sockfd;}
 };

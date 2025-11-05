@@ -1,10 +1,22 @@
 #include "EventLoop.h"
 #include <unistd.h>
 #include "Logger.h"
+#include <sys/eventfd.h>
 const int kPollTimeMs = 10000;
+
+int createWakeupFd()
+{
+    int fd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if(fd < 0)
+    {
+        LOG_FATAL("创建唤醒fd错误");
+    }
+    return fd;
+}
 EventLoop::EventLoop()
     : m_poller(new EPollPoller())
     , m_threadid(std::this_thread::get_id())
+    , m_wakeupFd(createWakeupFd())
 {
 }
 
@@ -54,6 +66,11 @@ void EventLoop::runInLoop(Functor func)
 void EventLoop::updateChannel(Channel *channel)
 {
     m_poller->updateChannel(channel);
+}
+
+void EventLoop::removeChannel(Channel *channel)
+{
+    m_poller->removeChannel(channel);
 }
 
 void EventLoop::wakeup()
