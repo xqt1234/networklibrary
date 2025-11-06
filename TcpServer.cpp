@@ -25,7 +25,9 @@ void TcpServer::newConnection(int connfd, const InetAddress &peerAddr)
     std::cout << "有新连接到达" << peerAddr.toIpPortString() << std::endl;
     EventLoop* ioLoop = m_pool->getNextLoop();
     TcpConnectionPtr conn(new TcpConnection(ioLoop,connfd,peerAddr));
-    m_clients[m_nextConnId++] = conn;
+    m_clients[m_nextConnId] = conn;
+    conn->setConnId(m_nextConnId);
+    m_nextConnId++;
     conn->setConnectionCallBack(m_ConnectionCallBack);
     conn->setMessageCallback(m_MessageCallBack);
     conn->setCloseCallBack(std::bind(&TcpServer::removeConnection,this,_1));

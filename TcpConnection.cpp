@@ -19,6 +19,7 @@ TcpConnection::TcpConnection(EventLoop *loop, int cfd, InetAddress address)
 
 TcpConnection::~TcpConnection()
 {
+    std::cout << "析构了TcpConnection" << std::endl;
 }
 
 void TcpConnection::connectEstablished()
@@ -35,7 +36,7 @@ void TcpConnection::connectDestroyed()
     {
         m_state = StateE::kDisconnected;
         m_channel->disableAll();
-        ConnectionCallBack(shared_from_this());
+        m_ConnectionCallBack(shared_from_this());
     }
     m_channel->remove();
 }
@@ -136,7 +137,8 @@ void TcpConnection::handleClose()
 {
     m_state = StateE::kDisconnected;
     m_channel->disableAll();
-    m_ConnectionCallBack(shared_from_this());
+    TcpConnectionPtr guardThis(shared_from_this());
+    m_CloseCallBack(guardThis);
 }
 
 void TcpConnection::handleError()
