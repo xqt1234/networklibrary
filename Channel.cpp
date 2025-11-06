@@ -5,13 +5,15 @@
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::kWriteEvent = EPOLLOUT;
-Channel::Channel(int fd)
+Channel::Channel(int fd,EventLoop* loop)
     : m_fd(fd)
+    , m_loop(loop)
 {
 }
 
 Channel::~Channel()
 {
+    std::cout << "析构了Channel" << std::endl;
 }
 
 void Channel::handleEvent()
@@ -36,8 +38,9 @@ void Channel::handleEvent()
 void Channel::handleEventWithGuard()
 {
     LOG_INFO("处理事件:{}", m_revents);
-    if ((m_revents & EPOLLHUP) && !(m_revents & EPOLLIN))
+    if ((m_revents & EPOLLHUP) && !(m_revents & EPOLLIN) || (m_revents & EPOLLRDHUP))
     {
+        LOG_DEBUG("关闭连接aaaaa");
         if (m_closeCallBack)
         {
             m_closeCallBack();
@@ -68,7 +71,14 @@ void Channel::handleEventWithGuard()
 
 void Channel::update()
 {
+    m_addedToLoop = true;
     m_loop->updateChannel(this);
+}
+
+void Channel::remove()
+{
+    m_addedToLoop = false;
+    m_loop->removeChannel(this);
 }
 
 void Channel::tie(const std::shared_ptr<void> &obj)

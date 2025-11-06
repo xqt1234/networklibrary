@@ -3,11 +3,17 @@
 #include <unordered_set>
 #include "Logger.h"
 #include <unistd.h>
-Acceptor::Acceptor(InetAddress listenaddr)
+#include "Channel.h"
+#include "EventLoop.h"
+#include "Socket.h"
+Acceptor::Acceptor(EventLoop *loop, InetAddress listenaddr)
+    : m_socket()
+    ,m_channel(new Channel(m_socket.fd(), loop)), m_loop(loop)
 {
+    m_socket.bindAddress(listenaddr);
     m_socket.setReuseAddr(true);
     m_socket.setReusePort(true);
-    m_socket.bindAddress(listenaddr);
+    m_channel->setReadCallBack(std::bind(&Acceptor::handleRead, this));
 }
 
 Acceptor::~Acceptor()
@@ -18,23 +24,19 @@ void Acceptor::listen()
 {
     m_listenning = true;
     m_socket.listen();
-    InetAddress addr;
+    m_channel->enableReading();
+    std::cout << m_channel->events() << std::endl;
+}
 
-    std::unordered_set<int> clients;
-    while (1)
+void Acceptor::handleRead()
+{
+    InetAddress addr;
+    int cfd = m_socket.accept(&addr);
+    if (cfd > 0)
     {
-        int cfd = m_socket.accept(&addr);
-        if (cfd > 0)
+        if (m_NewConnectionCallback)
         {
-            if(m_NewConnectionCallback)
-            {
-                m_NewConnectionCallback(cfd,addr);
-            }
+            m_NewConnectionCallback(cfd, addr);
         }
-        // if(m_test)
-        // {
-        //     m_test();
-        // }
-        ::usleep(10000);
     }
 }

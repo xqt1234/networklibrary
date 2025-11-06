@@ -1,11 +1,26 @@
 #include "EventLoop.h"
 #include <unistd.h>
 #include "Logger.h"
-const int kPollTimeMs = 10000;
+#include <sys/eventfd.h>
+const int kPollTimeMs = 20000;
+
+int createWakeupFd()
+{
+    int fd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if(fd < 0)
+    {
+        LOG_FATAL("创建唤醒fd错误");
+    }
+    return fd;
+}
 EventLoop::EventLoop()
     : m_poller(new EPollPoller())
     , m_threadid(std::this_thread::get_id())
+    , m_wakeupFd(createWakeupFd())
+    , m_wakeupChannel(new Channel(m_wakeupFd,this))
 {
+    m_wakeupChannel->setReadCallBack(std::bind(&EventLoop::handleRead,this));
+    m_wakeupChannel->enableReading();
 }
 
 EventLoop::~EventLoop()
@@ -25,6 +40,7 @@ void EventLoop::loop()
         {
             channel->handleEvent();
         }
+        doPendingFunctors();
     }
 }
 
@@ -56,6 +72,11 @@ void EventLoop::updateChannel(Channel *channel)
     m_poller->updateChannel(channel);
 }
 
+void EventLoop::removeChannel(Channel *channel)
+{
+    m_poller->removeChannel(channel);
+}
+
 void EventLoop::wakeup()
 {
     uint64_t one = 1;
@@ -63,6 +84,16 @@ void EventLoop::wakeup()
     if(len != sizeof(one))
     {
         LOG_ERROR("唤醒失败");
+    }
+}
+
+void EventLoop::handleRead()
+{
+    uint64_t one = 1;
+    size_t len = read(m_wakeupFd,(void*)&one,sizeof(one));
+    if(len != sizeof(one))
+    {
+        LOG_ERROR("eventloop处理唤醒自己的fd失败");
     }
 }
 

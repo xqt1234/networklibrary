@@ -7,6 +7,7 @@ private:
 
 public:
     Socket();
+    Socket(int fd);
     ~Socket();
     int accept(InetAddress *peerAddr);
     void bindAddress(InetAddress listenAddr);
@@ -16,4 +17,5 @@ public:
     void setReusePort(bool on);
     void setKeepAlive(bool on);
     void shutdownWrite();
+    int fd(){return m_sockfd;}
 };

@@ -19,6 +19,7 @@ private:
     std::mutex m_pendingMtx;
     std::thread::id m_threadid;
     int m_wakeupFd;
+    Channel* m_wakeupChannel;
     std::atomic<bool> m_callingPendingFunctors{false};
 public:
     EventLoop();
@@ -27,11 +28,13 @@ public:
     void queueInLoop(Functor func);
     void runInLoop(Functor func);
     void updateChannel(Channel* channel);
+    void removeChannel(Channel* channel);
 private:
     bool isInLoopThread()
     {
         return m_threadid == std::this_thread::get_id();
     }
     void wakeup();
+    void handleRead();
     void doPendingFunctors();
 };

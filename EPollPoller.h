@@ -12,6 +12,7 @@ private:
     ChannelMap m_clients;
     int m_epollfd;
     EventList m_events;
+    static const int kInitEventListSize = 16;
 public:
     EPollPoller(/* args */);
     ~EPollPoller();

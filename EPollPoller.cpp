@@ -8,6 +8,7 @@ const int kAdded = 1;
 const int kDeleted = 2;
 EPollPoller::EPollPoller()
     : m_epollfd(::epoll_create1(EPOLL_CLOEXEC))
+    , m_events(kInitEventListSize)
 {
 }
 
