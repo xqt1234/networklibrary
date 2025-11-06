@@ -4,7 +4,7 @@
 #include "Channel.h"
 #include "TcpConnection.h"
 #include <functional>
-
+#include "Logger.h"
 class EchoServer
 {
 private:
@@ -30,6 +30,7 @@ public:
         }else
         {
             std::cout << "断开连接" << std::endl;
+            LOG_INFO("连接计数：{}",conn.use_count());
         }
     }
     void start()

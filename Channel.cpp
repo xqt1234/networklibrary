@@ -18,6 +18,7 @@ Channel::~Channel()
 void Channel::handleEvent()
 {
     std::shared_ptr<void> guard;
+    std::cout << "调用-------" << std::endl;
     // 一些动态添加的连接之类的对象会进行绑定，这里进行检测是否已经销毁
     // 一些不是动态添加的对象，直接执行就行了。
     if (m_tied)
@@ -39,6 +40,7 @@ void Channel::handleEventWithGuard()
     LOG_INFO("处理事件:{}", m_revents);
     if ((m_revents & EPOLLHUP) && !(m_revents & EPOLLIN))
     {
+        LOG_DEBUG("关闭连接aaaaa");
         if (m_closeCallBack)
         {
             m_closeCallBack();
@@ -56,6 +58,11 @@ void Channel::handleEventWithGuard()
         if (m_readCallBack)
         {
             m_readCallBack();
+        }
+    }
+    if (m_revents & EPOLLRDHUP) {
+        if (m_closeCallBack) {
+            m_closeCallBack();
         }
     }
     if (m_revents & EPOLLOUT)

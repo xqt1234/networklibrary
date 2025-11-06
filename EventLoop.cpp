@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "Logger.h"
 #include <sys/eventfd.h>
-const int kPollTimeMs = 10000;
+const int kPollTimeMs = 20000;
 
 int createWakeupFd()
 {
@@ -17,7 +17,10 @@ EventLoop::EventLoop()
     : m_poller(new EPollPoller())
     , m_threadid(std::this_thread::get_id())
     , m_wakeupFd(createWakeupFd())
+    , m_wakeupChannel(new Channel(m_wakeupFd,this))
 {
+    m_wakeupChannel->setReadCallBack(std::bind(&EventLoop::handleRead,this));
+    m_wakeupChannel->enableReading();
 }
 
 EventLoop::~EventLoop()
@@ -37,6 +40,7 @@ void EventLoop::loop()
         {
             channel->handleEvent();
         }
+        doPendingFunctors();
     }
 }
 
@@ -80,6 +84,16 @@ void EventLoop::wakeup()
     if(len != sizeof(one))
     {
         LOG_ERROR("唤醒失败");
+    }
+}
+
+void EventLoop::handleRead()
+{
+    uint64_t one = 1;
+    size_t len = read(m_wakeupFd,(void*)&one,sizeof(one));
+    if(len != sizeof(one))
+    {
+        LOG_ERROR("eventloop处理唤醒自己的fd失败");
     }
 }
 

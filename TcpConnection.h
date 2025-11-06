@@ -5,6 +5,7 @@
 #include "Buffer.h"
 class EventLoop;
 class Channel;
+class Socket;
 class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 private:
@@ -31,7 +32,7 @@ private:
     MessageCallBack m_MessageCallBack;
     CloseCallBack m_CloseCallBack;
     uint64_t m_connId;
-    
+    std::unique_ptr<Socket> m_socket;
 public:
     TcpConnection(EventLoop *loop, int cfd, InetAddress address);
     ~TcpConnection();
@@ -77,6 +78,7 @@ public:
 
 private:
     void sendInLoop(const void *data, size_t len);
+    void shutdownInLoop();
     void handRead();
     void handleClose();
     void handleError();

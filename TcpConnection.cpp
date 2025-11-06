@@ -3,8 +3,15 @@
 #include "EventLoop.h"
 #include "Logger.h"
 #include "Buffer.h"
+#include "Socket.h"
 TcpConnection::TcpConnection(EventLoop *loop, int cfd, InetAddress address)
-    : m_fd(cfd), m_loop(loop), m_addr(address), m_channel(new Channel(cfd,loop)), m_state(StateE::kConnecting), m_highWaterMark(64 * 1024 * 1024)
+    : m_fd(cfd)
+    , m_loop(loop)
+    , m_addr(address)
+    , m_channel(new Channel(cfd,loop))
+    , m_state(StateE::kConnecting)
+    , m_highWaterMark(64 * 1024 * 1024)
+    , m_socket(new Socket(cfd))
 {
     m_channel->setReadCallBack(std::bind(&TcpConnection::handRead,this));
     m_channel->setCloseCallBack(std::bind(&TcpConnection::handleClose,this));
@@ -38,13 +45,17 @@ void TcpConnection::send(std::string str)
     sendInLoop(str.data(), str.length());
 }
 
+void TcpConnection::send(const char *data, int len)
+{
+    sendInLoop(data, len);
+}
+
 void TcpConnection::shutdown()
 {
     if (m_state == StateE::kConnected)
     {
         m_state = StateE::kDisconnecting;
-        // FIXME: shared_from_this()?
-        //m_loop->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
+
     }
 }
 
@@ -95,15 +106,25 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
     }
 }
 
+void TcpConnection::shutdownInLoop()
+{
+    if(!m_channel->isWriting())
+    {
+        m_socket->shutdownWrite();
+    }
+}
+
 void TcpConnection::handRead()
 {
     int err_num = 0;
     size_t n = m_inputBuffer.readFd(m_channel->fd(),&err_num);
     if(n > 0)
     {
+        LOG_INFO("收到数据");
         m_MessageCallBack(shared_from_this(),&m_inputBuffer);
     }else if(n == 0)
     {
+        LOG_INFO("对端关闭连接");
         handleClose();
     }else
     {

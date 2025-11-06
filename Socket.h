@@ -7,6 +7,7 @@ private:
 
 public:
     Socket();
+    Socket(int fd);
     ~Socket();
     int accept(InetAddress *peerAddr);
     void bindAddress(InetAddress listenAddr);

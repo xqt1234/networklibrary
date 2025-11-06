@@ -11,6 +11,8 @@ Acceptor::Acceptor(EventLoop *loop, InetAddress listenaddr)
     ,m_channel(new Channel(m_socket.fd(), loop)), m_loop(loop)
 {
     m_socket.bindAddress(listenaddr);
+    m_socket.setReuseAddr(true);
+    m_socket.setReusePort(true);
     m_channel->setReadCallBack(std::bind(&Acceptor::handleRead, this));
 }
 
