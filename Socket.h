@@ -10,7 +10,7 @@ public:
     Socket(int fd);
     ~Socket();
     int accept(InetAddress *peerAddr);
-    void bindAddress(InetAddress listenAddr);
+    void bindAddress(InetAddress& listenAddr);
     void listen();
     void setTcpNoDelay(bool on);
     void setReuseAddr(bool on);

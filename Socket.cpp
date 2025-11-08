@@ -15,9 +15,8 @@ Socket::Socket()
         LOG_INFO("创建socket成功{}", m_sockfd);
     }
 }
-Socket::Socket(int fd)
+Socket::Socket(int fd) : m_sockfd(fd)
 {
-    m_sockfd = fd;
 }
 
 Socket::~Socket()
@@ -59,7 +58,7 @@ int Socket::accept(InetAddress *peerAddr)
     return connfd;
 }
 
-void Socket::bindAddress(InetAddress listenAddr)
+void Socket::bindAddress(InetAddress& listenAddr)
 {
     int ret = ::bind(m_sockfd, (sockaddr *)listenAddr.getSockAddr(), sizeof(sockaddr_in));
     if (ret == -1)

@@ -51,6 +51,7 @@ public:
     template <typename... Args>
     void log(LogLevel level, const std::source_location &loc, std::string_view fmt, Args... args)
     {
+        return;
         if (m_exit.load(std::memory_order_acquire) || level < m_level)
         {
             return;

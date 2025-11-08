@@ -59,7 +59,7 @@ public:
         m_WriteCompleteCallBack = cb;
     }
     // 右值版本直接使用的时候std::move()得了
-    void send(std::string str);
+    void send(const std::string& str);
     void send(const char *data, int len);
 
     Buffer *inputBuffer()

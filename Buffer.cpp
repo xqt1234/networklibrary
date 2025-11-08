@@ -60,15 +60,15 @@ std::string Buffer::readAsString(int len)
     {
         len = readableBytes();
     }
-    std::string result(begin(), len);
-    m_readIndex = m_readIndex+len;
+    std::string result(begin() + m_readIndex, len);
+    m_readIndex += len;
     return result;
 }
 
 std::string Buffer::readAllAsString()
 {
     std::string result(begin() + m_readIndex, readableBytes());
-    m_readIndex = m_readIndex + readableBytes();
+    m_readIndex = m_writeIndex;
     return result;
 }
 
@@ -86,8 +86,9 @@ void Buffer::makeSpace(size_t len)
 {
     if(writeableBytes() + prependableBytes() - kCheapPrepend < len)
     {
-        m_buf.resize(m_writeIndex + kCheapPrepend);
-    }else
+        m_buf.resize(m_writeIndex + len);
+    }
+    else
     {
         int readcnt = readableBytes();
         std::copy(begin() + m_readIndex,begin() + m_writeIndex,begin() + kCheapPrepend);

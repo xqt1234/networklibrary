@@ -23,15 +23,15 @@ public:
     {
         if (conn->isConnected())
         {
-            //std::cout << "启用外面的回调" << std::endl;
+            // std::cout << "启用外面的回调" << std::endl;
             // Buffer *input = conn->inputBuffer();
             // std::string src = input->readAllAsString();
             // std::cout << src << std::endl;
         }
         else
         {
-            //std::cout << "断开连接" << std::endl;
-            LOG_INFO("连接计数：{}", conn.use_count());
+            // std::cout << "断开连接" << std::endl;
+            // LOG_INFO("连接计数：{}", conn.use_count());
         }
     }
     void start()
@@ -65,6 +65,8 @@ public:
         iss >> method >> path;
         //std::string res1 = HttpResponse::getInstance().getFile("index.html");
         std::string res = HttpResponse::getInstance().getCacheFile("index.html");
+        // std::cout << res << std::endl;
+        // std::cout << "-------- " << std::endl;
         conn->send(res);
     }
 };
@@ -73,8 +75,8 @@ int main()
 {
     Logger::getInstance().setLogLevel(LogLevel::DEBUG);
     EventLoop loop;
-    EchoServer server(&loop, 9999, "0.0.0.0");
-    server.setThreadNum(2);
+    EchoServer server(&loop, 9999, "192.168.65.4");
+    server.setThreadNum(4);
     server.start();
     loop.loop();
     std::cout << "hello world" << std::endl;

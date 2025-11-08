@@ -9,6 +9,10 @@ TcpConnection::TcpConnection(EventLoop *loop, int cfd, InetAddress address)
 {
     m_channel->setReadCallBack(std::bind(&TcpConnection::handRead, this));
     m_channel->setCloseCallBack(std::bind(&TcpConnection::handleClose, this));
+    // if(m_socket)
+    // {
+    //     m_socket->setTcpNoDelay(true);
+    // }
 }
 
 TcpConnection::~TcpConnection()
@@ -38,14 +42,21 @@ void TcpConnection::connectDestroyed()
     m_channel->remove();
 }
 
-void TcpConnection::send(std::string str)
+void TcpConnection::send(const std::string& str)
 {
     sendInLoop(str.data(), str.length());
 }
 
 void TcpConnection::send(const char *data, int len)
 {
-    sendInLoop(data, len);
+    if(m_loop->isInLoopThread())
+    {
+        sendInLoop(data, len);
+    }else
+    {
+        m_loop->runInLoop(std::bind(&TcpConnection::sendInLoop,this,data,len));
+    }
+    
 }
 
 void TcpConnection::shutdown()
