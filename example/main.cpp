@@ -5,6 +5,7 @@
 #include "TcpConnection.h"
 #include <functional>
 #include "Logger.h"
+#include "HttpResponse.h"
 class EchoServer
 {
 private:
@@ -16,21 +17,21 @@ public:
         : m_loop(loop), m_server(loop, port, ipaddr)
     {
         m_server.setConnectionCallBack(std::bind(&EchoServer::newConnection, this, _1));
-        m_server.setMessageCallBack(std::bind(&EchoServer::onMessage,this,_1,_2));
+        m_server.setMessageCallBack(std::bind(&EchoServer::onHttpMessage, this, _1, _2));
     }
     void newConnection(const TcpConnectionPtr &conn)
     {
         if (conn->isConnected())
         {
-            std::cout << "启用外面的回调" << std::endl;
-            Buffer *input = conn->inputBuffer();
-            std::string src = input->readAllAsString();
-            std::cout << src << std::endl;
-            conn->send("hello" + src);
-        }else
+            //std::cout << "启用外面的回调" << std::endl;
+            // Buffer *input = conn->inputBuffer();
+            // std::string src = input->readAllAsString();
+            // std::cout << src << std::endl;
+        }
+        else
         {
-            std::cout << "断开连接" << std::endl;
-            LOG_INFO("连接计数：{}",conn.use_count());
+            //std::cout << "断开连接" << std::endl;
+            LOG_INFO("连接计数：{}", conn.use_count());
         }
     }
     void start()
@@ -44,13 +45,33 @@ public:
     void onMessage(const TcpConnectionPtr &conn, Buffer *buf)
     {
         std::string msg = buf->readAllAsString();
+        if (!msg.empty() && msg.back() == '\n')
+        {
+            msg.pop_back();
+        }
+        if (!msg.empty() && msg.back() == '\r')
+        {
+            msg.pop_back();
+        }
+        std::cout << msg << std::endl;
         conn->send(msg + "aaaaa\n");
-        conn->shutdown();
+        // conn->shutdown();
+    }
+    void onHttpMessage(const TcpConnectionPtr &conn, Buffer *buf)
+    {
+        std::string request = buf->readAllAsString();
+        std::string method, path;
+        std::istringstream iss(request);
+        iss >> method >> path;
+        //std::string res1 = HttpResponse::getInstance().getFile("index.html");
+        std::string res = HttpResponse::getInstance().getCacheFile("index.html");
+        conn->send(res);
     }
 };
 
 int main()
 {
+    Logger::getInstance().setLogLevel(LogLevel::DEBUG);
     EventLoop loop;
     EchoServer server(&loop, 9999, "0.0.0.0");
     server.setThreadNum(2);

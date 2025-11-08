@@ -13,7 +13,8 @@ Channel::Channel(int fd,EventLoop* loop)
 
 Channel::~Channel()
 {
-    std::cout << "析构了Channel" << std::endl;
+    //remove();
+    LOG_DEBUG("析构了Channel channelfd: {}",m_fd);
 }
 
 void Channel::handleEvent()
@@ -79,6 +80,11 @@ void Channel::remove()
 {
     m_addedToLoop = false;
     m_loop->removeChannel(this);
+    // if(!m_loop->isInLoopThread())
+    // {
+    //     std::cout << "不在自己的loop中" << std::endl;
+    // }
+    
 }
 
 void Channel::tie(const std::shared_ptr<void> &obj)

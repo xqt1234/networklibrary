@@ -25,8 +25,8 @@
     Logger::getInstance().log(LogLevel::FATAL, std::source_location::current(), fmt, ##__VA_ARGS__)
 enum class LogLevel
 {
-    DEBUG,
     INFO,
+    DEBUG,
     WARN,
     ERROR,
     FATAL,
@@ -83,6 +83,7 @@ public:
     }
     void flush();
     void shutdown();
+    void setLogLevel(LogLevel level);
 private:
     Logger();
     ~Logger();

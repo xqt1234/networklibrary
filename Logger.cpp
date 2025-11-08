@@ -47,6 +47,11 @@ void Logger::shutdown()
     }
 }
 
+void Logger::setLogLevel(LogLevel level)
+{
+    m_level = level;
+}
+
 void Logger::swapBuffers()
 {
     if (!m_activeBuffers.empty())

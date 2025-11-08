@@ -5,21 +5,18 @@
 #include "Buffer.h"
 #include "Socket.h"
 TcpConnection::TcpConnection(EventLoop *loop, int cfd, InetAddress address)
-    : m_fd(cfd)
-    , m_loop(loop)
-    , m_addr(address)
-    , m_channel(new Channel(cfd,loop))
-    , m_state(StateE::kConnecting)
-    , m_highWaterMark(64 * 1024 * 1024)
-    , m_socket(new Socket(cfd))
+    : m_fd(cfd), m_loop(loop), m_addr(address), m_channel(new Channel(cfd, loop)), m_state(StateE::kConnecting), m_highWaterMark(64 * 1024 * 1024), m_socket(new Socket(cfd))
 {
-    m_channel->setReadCallBack(std::bind(&TcpConnection::handRead,this));
-    m_channel->setCloseCallBack(std::bind(&TcpConnection::handleClose,this));
+    m_channel->setReadCallBack(std::bind(&TcpConnection::handRead, this));
+    m_channel->setCloseCallBack(std::bind(&TcpConnection::handleClose, this));
 }
 
 TcpConnection::~TcpConnection()
 {
-    std::cout << "析构了TcpConnection" << std::endl;
+    LOG_DEBUG("析构了TcpConnection channelfd: {}", m_channel->fd());
+    // m_channel->remove();
+    // std::cout << "调用m_channel->remove();" << m_channel->fd()<< std::endl;
+    // m_channel->remove();
 }
 
 void TcpConnection::connectEstablished()
@@ -32,7 +29,7 @@ void TcpConnection::connectEstablished()
 
 void TcpConnection::connectDestroyed()
 {
-    if(m_state == StateE::kConnected)
+    if (m_state == StateE::kConnected)
     {
         m_state = StateE::kDisconnected;
         m_channel->disableAll();
@@ -56,7 +53,7 @@ void TcpConnection::shutdown()
     if (m_state == StateE::kConnected)
     {
         m_state = StateE::kDisconnecting;
-
+        m_loop->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
     }
 }
 
@@ -109,7 +106,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len)
 
 void TcpConnection::shutdownInLoop()
 {
-    if(!m_channel->isWriting())
+    if (!m_channel->isWriting())
     {
         m_socket->shutdownWrite();
     }
@@ -118,18 +115,20 @@ void TcpConnection::shutdownInLoop()
 void TcpConnection::handRead()
 {
     int err_num = 0;
-    size_t n = m_inputBuffer.readFd(m_channel->fd(),&err_num);
-    if(n > 0)
+    size_t n = m_inputBuffer.readFd(m_channel->fd(), &err_num);
+    if (n > 0)
     {
         LOG_INFO("收到数据");
-        m_MessageCallBack(shared_from_this(),&m_inputBuffer);
-    }else if(n == 0)
+        m_MessageCallBack(shared_from_this(), &m_inputBuffer);
+    }
+    else if (n == 0)
     {
         LOG_INFO("对端关闭连接");
         handleClose();
-    }else
+    }
+    else
     {
-        LOG_ERROR("读错误{}",err_num);
+        LOG_ERROR("读错误{}", err_num);
     }
 }
 
@@ -143,5 +142,4 @@ void TcpConnection::handleClose()
 
 void TcpConnection::handleError()
 {
-
 }

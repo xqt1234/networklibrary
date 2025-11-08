@@ -10,6 +10,7 @@ class EventLoop
 public:
     using ChannelList =std::vector<Channel*>;
     using Functor = std::function<void()>;
+    std::thread::id m_threadid;
 private:
     std::atomic<bool> m_quit{false};
     EPollPoller* m_poller;
@@ -17,7 +18,7 @@ private:
     bool m_eventHandling{false};
     std::vector<Functor> m_pendingFunctors;
     std::mutex m_pendingMtx;
-    std::thread::id m_threadid;
+    
     int m_wakeupFd;
     Channel* m_wakeupChannel;
     std::atomic<bool> m_callingPendingFunctors{false};
@@ -29,11 +30,12 @@ public:
     void runInLoop(Functor func);
     void updateChannel(Channel* channel);
     void removeChannel(Channel* channel);
-private:
     bool isInLoopThread()
     {
         return m_threadid == std::this_thread::get_id();
     }
+private:
+    
     void wakeup();
     void handleRead();
     void doPendingFunctors();

@@ -7,19 +7,16 @@ const int kPollTimeMs = 20000;
 int createWakeupFd()
 {
     int fd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
-    if(fd < 0)
+    if (fd < 0)
     {
         LOG_FATAL("创建唤醒fd错误");
     }
     return fd;
 }
 EventLoop::EventLoop()
-    : m_poller(new EPollPoller())
-    , m_threadid(std::this_thread::get_id())
-    , m_wakeupFd(createWakeupFd())
-    , m_wakeupChannel(new Channel(m_wakeupFd,this))
+    : m_poller(new EPollPoller()), m_threadid(std::this_thread::get_id()), m_wakeupFd(createWakeupFd()), m_wakeupChannel(new Channel(m_wakeupFd, this))
 {
-    m_wakeupChannel->setReadCallBack(std::bind(&EventLoop::handleRead,this));
+    m_wakeupChannel->setReadCallBack(std::bind(&EventLoop::handleRead, this));
     m_wakeupChannel->enableReading();
 }
 
@@ -47,10 +44,10 @@ void EventLoop::loop()
 void EventLoop::queueInLoop(Functor func)
 {
     {
-        std::mutex m_pendingMtx;
+        std::lock_guard<std::mutex> lock(m_pendingMtx);
         m_pendingFunctors.push_back(func);
     }
-    if(!isInLoopThread() || m_callingPendingFunctors)
+    if (!isInLoopThread() || m_callingPendingFunctors)
     {
         wakeup();
     }
@@ -58,10 +55,11 @@ void EventLoop::queueInLoop(Functor func)
 
 void EventLoop::runInLoop(Functor func)
 {
-    if(isInLoopThread())
+    if (isInLoopThread())
     {
         func();
-    }else
+    }
+    else
     {
         queueInLoop(func);
     }
@@ -80,8 +78,8 @@ void EventLoop::removeChannel(Channel *channel)
 void EventLoop::wakeup()
 {
     uint64_t one = 1;
-    size_t len = write(m_wakeupFd,(void*)&one,sizeof(one));
-    if(len != sizeof(one))
+    size_t len = write(m_wakeupFd, (void *)&one, sizeof(one));
+    if (len != sizeof(one))
     {
         LOG_ERROR("唤醒失败");
     }
@@ -90,8 +88,8 @@ void EventLoop::wakeup()
 void EventLoop::handleRead()
 {
     uint64_t one = 1;
-    size_t len = read(m_wakeupFd,(void*)&one,sizeof(one));
-    if(len != sizeof(one))
+    size_t len = read(m_wakeupFd, (void *)&one, sizeof(one));
+    if (len != sizeof(one))
     {
         LOG_ERROR("eventloop处理唤醒自己的fd失败");
     }
@@ -105,7 +103,7 @@ void EventLoop::doPendingFunctors()
         std::unique_lock<std::mutex> lock(m_pendingMtx);
         funcs.swap(m_pendingFunctors);
     }
-    for(const auto& func : funcs)
+    for (const auto &func : funcs)
     {
         func();
     }

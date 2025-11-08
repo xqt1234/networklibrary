@@ -36,6 +36,7 @@ private:
 public:
     TcpConnection(EventLoop *loop, int cfd, InetAddress address);
     ~TcpConnection();
+    EventLoop* getLoop(){return m_loop;}
     void connectEstablished();
     void connectDestroyed();
     void setConnId(uint64_t connid) { m_connId = connid; }

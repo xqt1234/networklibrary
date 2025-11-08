@@ -67,18 +67,19 @@ std::string Buffer::readAsString(int len)
 
 std::string Buffer::readAllAsString()
 {
-    std::string result(begin(), readableBytes());
+    std::string result(begin() + m_readIndex, readableBytes());
     m_readIndex = m_readIndex + readableBytes();
     return result;
 }
 
 void Buffer::append(const char *src, int len)
 {
-    if(len < writeableBytes())
+    if(len > writeableBytes())
     {
         makeSpace(len);
     }
     std::copy(src,src + len,begin() + m_writeIndex);
+    m_writeIndex+=len;
 }
 
 void Buffer::makeSpace(size_t len)
