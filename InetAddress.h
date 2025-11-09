@@ -2,6 +2,10 @@
 #include <netinet/in.h>
 #include <string>
 using std::string;
+/**
+ * @brief 对ip和端口进行简单封装，转换一下格式。
+ * 
+ */
 class InetAddress
 {
 private:

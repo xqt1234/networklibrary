@@ -1,5 +1,5 @@
 /lib
 /build
 /example/test
-/example/muduo.log
 /.vscode
+/example/*.log

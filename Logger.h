@@ -12,7 +12,11 @@
 #include <format>
 #include <thread>
 #include <source_location>
-
+/**
+ * @brief 主要思路：使用两个buffer，一个前台一个后台，定时定量写入磁盘。
+ * 通过swap，直接换数据，效率高。
+ * 
+ */
 #define LOG_DEBUG(fmt, ...) \
     Logger::getInstance().log(LogLevel::DEBUG, std::source_location::current(), fmt, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...) \
@@ -51,7 +55,7 @@ public:
     template <typename... Args>
     void log(LogLevel level, const std::source_location &loc, std::string_view fmt, Args... args)
     {
-        return;
+        //return;
         if (m_exit.load(std::memory_order_acquire) || level < m_level)
         {
             return;
@@ -92,6 +96,8 @@ private:
     void swapBuffers();
     void setLogFile(const std::string &filename);
     void processBuffers();
+    std::string createDefaultFileName();
+    void checkfile();
     const char* logLevelToString(LogLevel level);
     std::string buildRecord(LogLevel level,const std::source_location &loc,const std::string &msg);
 };

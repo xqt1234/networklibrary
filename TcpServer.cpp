@@ -16,6 +16,13 @@ TcpServer::TcpServer(EventLoop *loop, uint16_t port, string addr)
 
 TcpServer::~TcpServer()
 {
+    for (auto& val : m_clients)
+    {
+        TcpConnectionPtr conn(val.second);
+        val.second.reset();
+        conn->getLoop()->runInLoop(
+            std::bind(&TcpConnection::connectDestroyed, conn));
+    }
 }
 
 void TcpServer::newConnection(int connfd, const InetAddress &peerAddr)
@@ -55,5 +62,5 @@ void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
     m_clients.erase(conn->getConnId());
     EventLoop *ioLoop = conn->getLoop();
     ioLoop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
-    //LOG_DEBUG("在主线程中，主线程loop是{},唤醒的loop是{}", ss.str(),ss2.str());
+    // LOG_DEBUG("在主线程中，主线程loop是{},唤醒的loop是{}", ss.str(),ss2.str());
 }

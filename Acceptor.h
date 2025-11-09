@@ -4,6 +4,11 @@
 #include "Socket.h"
 class Channel;
 class EventLoop;
+
+/**
+ * @brief 主要思路就是设置监听，把自己放入主loop中，接收并处理新连接事件，所有的新连接入口
+ * 
+ */
 class Acceptor
 {
 public:

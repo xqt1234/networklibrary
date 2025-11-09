@@ -75,6 +75,11 @@ void EventLoop::removeChannel(Channel *channel)
     m_poller->removeChannel(channel);
 }
 
+void EventLoop::quit()
+{
+    m_quit = true;
+}
+
 void EventLoop::wakeup()
 {
     uint64_t one = 1;

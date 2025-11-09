@@ -2,7 +2,8 @@
 #include <vector>
 #include <string>
 /**
- * @brief 主要思路
+ * @brief 主要思路就是以环的方式使用一段内存，前面8个字节为预留，
+ * readindex和writeindex中间为可读数据，写入数据writeindex增加，读出去了readindex增加，
  * 
  */
 class Buffer

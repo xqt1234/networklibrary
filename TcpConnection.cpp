@@ -18,9 +18,6 @@ TcpConnection::TcpConnection(EventLoop *loop, int cfd, InetAddress address)
 TcpConnection::~TcpConnection()
 {
     LOG_DEBUG("析构了TcpConnection channelfd: {}", m_channel->fd());
-    // m_channel->remove();
-    // std::cout << "调用m_channel->remove();" << m_channel->fd()<< std::endl;
-    // m_channel->remove();
 }
 
 void TcpConnection::connectEstablished()

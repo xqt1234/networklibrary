@@ -24,14 +24,10 @@ public:
         if (conn->isConnected())
         {
             // std::cout << "启用外面的回调" << std::endl;
-            // Buffer *input = conn->inputBuffer();
-            // std::string src = input->readAllAsString();
-            // std::cout << src << std::endl;
         }
         else
         {
             // std::cout << "断开连接" << std::endl;
-            // LOG_INFO("连接计数：{}", conn.use_count());
         }
     }
     void start()
@@ -63,10 +59,8 @@ public:
         std::string method, path;
         std::istringstream iss(request);
         iss >> method >> path;
-        //std::string res1 = HttpResponse::getInstance().getFile("index.html");
-        std::string res = HttpResponse::getInstance().getCacheFile("index.html");
-        // std::cout << res << std::endl;
-        // std::cout << "-------- " << std::endl;
+        std::string res = HttpResponse::getInstance().getFile("index.html");
+        //std::string res = HttpResponse::getInstance().getCacheFile("index.html");
         conn->send(res);
     }
 };

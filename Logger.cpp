@@ -1,5 +1,5 @@
 #include "Logger.h"
-
+const int maxSize = 100 * 1024 * 1024;
 Logger &Logger::getInstance()
 {
     static Logger logger;
@@ -8,7 +8,9 @@ Logger &Logger::getInstance()
 
 Logger::Logger()
 {
-    setLogFile("muduo.log");
+    
+    //setLogFile("muduo.log");
+    setLogFile(createDefaultFileName());
     m_workThread = std::thread([this]
                                { this->processBuffers(); });
 }
@@ -99,7 +101,26 @@ void Logger::processBuffers()
             }
             m_ofs.flush();
             localBuffers.clear();
+            checkfile();
         }
+    }
+}
+
+std::string Logger::createDefaultFileName()
+{
+    auto now = std::chrono::system_clock::now();
+    auto local = floor<std::chrono::milliseconds>(now);
+    auto local_time = std::chrono::zoned_time{std::chrono::current_zone(), local};
+    std::string filename = std::format("{:%Y%m%d%H%M%S}.log", local_time);
+    return filename;
+}
+
+void Logger::checkfile()
+{
+    if(maxSize < m_ofs.tellp())
+    {
+        m_ofs.close();
+        setLogFile(createDefaultFileName());
     }
 }
 

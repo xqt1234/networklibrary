@@ -8,6 +8,11 @@
 #include "EventLoopThreadPoll.h"
 using std::string;
 
+/**
+ * @brief 库入口类。主要思路就是启动绑定，设置线程数量，回调函数接口，然后在新连接到来的时候，
+ * 传递回调给给新连接tcpconnection。提供开始函数完成创建线程。
+ * 作为核心路径分发新连接到eventloop，对应提供接口操作删除连接。该接口作为回调传入新连接中
+ */
 class TcpServer
 {
 public:

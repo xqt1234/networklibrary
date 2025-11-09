@@ -17,18 +17,19 @@ EPollPoller::~EPollPoller()
 
 void EPollPoller::removeChannel(Channel *channel)
 {
-    auto it = m_clients.find(channel->fd());
-    int state = channel->getState();
-    if (it != m_clients.end())
-    {
-        m_clients.erase(it);
-    }
+    // auto it = m_clients.find(channel->fd());
+    // int state = channel->getState();
+    // if (it != m_clients.end())
+    // {
+    //     m_clients.erase(it);
+    // }
 }
 
 bool EPollPoller::hasChannel(Channel *channel) const
 {
-    auto it = m_clients.find(channel->fd());
-    return it != m_clients.end();
+    // auto it = m_clients.find(channel->fd());
+    // return it != m_clients.end();
+    return true;
 }
 
 void EPollPoller::fillActiveChannels(int timeout, ChannelList *activeChannels)
@@ -62,15 +63,11 @@ void EPollPoller::updateChannel(Channel *channel)
     int state = channel->getState();
     if (state == kNew || state == kDeleted)
     {
-        if (state == kNew)
-        {
-            int fd = channel->fd();
-            if (m_clients.find(fd) != m_clients.end())
-            {
-                LOG_DEBUG("发生重用{}", fd);
-            }
-            m_clients[fd] = channel;
-        }
+        // if (state == kNew)
+        // {
+        //     int fd = channel->fd();
+        //     m_clients[fd] = channel;
+        // }
         channel->setState(kAdded);
         update(EPOLL_CTL_ADD, channel);
     }

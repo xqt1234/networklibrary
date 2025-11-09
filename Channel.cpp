@@ -13,7 +13,6 @@ Channel::Channel(int fd,EventLoop* loop)
 
 Channel::~Channel()
 {
-    //remove();
     LOG_DEBUG("析构了Channel channelfd: {}",m_fd);
 }
 

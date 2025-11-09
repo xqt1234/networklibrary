@@ -1,6 +1,12 @@
 #pragma once
 #include "CallBacks.h"
 class EventLoop;
+/**
+ * @brief 主要思路就是封装一下文件描述符fd（socket函数创建，acceptor中accept获取），
+ * 围绕该fd的所有操作，比如可读可写状态，事件，回调等等。
+ * 在这里通过构造传入的loop，管理自身的状态。
+ * 
+ */
 class Channel
 {
 private:

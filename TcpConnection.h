@@ -6,6 +6,12 @@
 class EventLoop;
 class Channel;
 class Socket;
+
+/**
+ * @brief 主要思路：围绕新连接的功能编写，比如发送数据，接收数据，对应设置这些回调函数
+ * 数据缓存等。记录自身的状态，所属事件循环等以及连接建立和销毁接口。
+ * 
+ */
 class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 {
 private:
