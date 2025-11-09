@@ -6,6 +6,7 @@
 #include <functional>
 #include "Logger.h"
 #include "HttpResponse.h"
+#include <signal.h>
 class EchoServer
 {
 private:
@@ -67,6 +68,7 @@ public:
 
 int main()
 {
+    signal(SIGPIPE, SIG_IGN);
     Logger::getInstance().setLogLevel(LogLevel::DEBUG);
     EventLoop loop;
     EchoServer server(&loop, 9999, "192.168.65.4");
