@@ -65,11 +65,7 @@
         "any": "cpp",
         "cstring": "cpp",
         "unordered_set": "cpp",
-<<<<<<< HEAD
-        "set": "cpp"
-=======
         "set": "cpp",
         "cinttypes": "cpp"
->>>>>>> daily-backup
     }
 }
