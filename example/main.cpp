@@ -24,11 +24,11 @@ public:
     {
         if (conn->isConnected())
         {
-            // std::cout << "启用外面的回调" << std::endl;
+            //std::cout << "启用外面的回调" << std::endl;
         }
         else
         {
-            // std::cout << "断开连接" << std::endl;
+            //std::cout << "断开连接" << std::endl;
         }
     }
     void start()

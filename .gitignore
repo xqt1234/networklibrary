@@ -4,3 +4,4 @@
 /.vscode
 /example/*.log
 /include
+/example/log/*

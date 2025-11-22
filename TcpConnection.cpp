@@ -145,6 +145,7 @@ void TcpConnection::handleClose()
     m_state = StateE::kDisconnected;
     m_channel->disableAll();
     TcpConnectionPtr guardThis(shared_from_this());
+    m_ConnectionCallBack(guardThis);
     m_CloseCallBack(guardThis);
 }
 
