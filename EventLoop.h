@@ -22,14 +22,14 @@ public:
     std::thread::id m_threadid;
 private:
     std::atomic<bool> m_quit{false};
-    EPollPoller* m_poller;
+    std::unique_ptr<EPollPoller> m_poller;
     ChannelList m_activeList;
     bool m_eventHandling{false};
     std::vector<Functor> m_pendingFunctors;
     std::mutex m_pendingMtx;
     
     int m_wakeupFd;
-    Channel* m_wakeupChannel;
+    std::unique_ptr<Channel> m_wakeupChannel;
     std::atomic<bool> m_callingPendingFunctors{false};
     
 public:

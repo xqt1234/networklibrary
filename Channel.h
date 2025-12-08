@@ -51,7 +51,7 @@ public:
     {
         m_readCallBack = cb;
     }
-    void setWriteCallBack(EventCallBack &cb)
+    void setWriteCallBack(const EventCallBack &cb)
     {
         m_writeCallBack = cb;
     }
@@ -59,7 +59,7 @@ public:
     {
         m_closeCallBack = cb;
     }
-    void setErrorCallBack(EventCallBack &cb)
+    void setErrorCallBack(const EventCallBack &cb)
     {
         m_errorCallBack = cb;
     }

@@ -23,6 +23,9 @@ EventLoop::EventLoop()
 EventLoop::~EventLoop()
 {
     m_quit = true;
+    m_wakeupChannel->disableAll();
+    m_wakeupChannel->remove();
+    ::close(m_wakeupFd);
 }
 
 void EventLoop::loop()
@@ -78,6 +81,10 @@ void EventLoop::removeChannel(Channel *channel)
 void EventLoop::quit()
 {
     m_quit = true;
+    if (isInLoopThread())
+    {
+        wakeup();
+    }
 }
 
 void EventLoop::wakeup()
