@@ -16,7 +16,8 @@ private:
 public:
     Connector(EventLoop* loop,const InetAddress& serverAddr);
     ~Connector();
-    void connect();
+    
+    void start();
     void setNewConnectionCallback(const NewConnectionCallback& cb)
     {
         m_NewConnectionCallback = cb;
@@ -27,4 +28,5 @@ private:
     void handleError();
     void resetChannel();
     int removeAndResetChannel();
+    void connect();
 };

@@ -48,7 +48,7 @@ public:
     void setConnId(uint64_t connid) { m_connId = connid; }
     uint64_t getConnId(){return m_connId;}
     bool isConnected(){return m_state == StateE::kConnected;}
-    void setConnectionCallBack(ConnectionCallBack &cb)
+    void setConnectionCallBack(const ConnectionCallBack &cb)
     {
         m_ConnectionCallBack = cb;
     }

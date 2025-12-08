@@ -5,12 +5,20 @@
 Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
     : m_serverAddr(serverAddr), m_loop(loop)
 {
-    std::cout << "创建connector" << std::endl;
 }
 
 Connector::~Connector()
 {
-    
+    if(m_channel)
+    {
+        m_channel->disableAll(); // 禁用所有事件
+        m_channel->remove();     // 
+    }
+}
+
+void Connector::start()
+{
+    m_loop->runInLoop(std::bind(&Connector::connect,this));
 }
 
 void Connector::connect()
@@ -26,7 +34,6 @@ void Connector::connect()
     }
     const sockaddr_in *addr = m_serverAddr.getSockAddr();
     int ret = ::connect(sockfd, (sockaddr *)addr, sizeof(sockaddr_in));
-    std::cout << "ret:" << ret << std::endl;
     int savedErrno = (ret == 0) ? 0 : errno;
     switch (savedErrno)
     {
@@ -66,7 +73,6 @@ void Connector::handleWrite()
         else
         {
             m_state = States::kConnected;
-            std::cout << "连接成功" << std::endl;
             m_NewConnectionCallback(fd);
         }
     }
@@ -78,9 +84,9 @@ void Connector::handleError()
     {
         int sockfd = removeAndResetChannel();
         int err = getSocketError(sockfd);
-        LOG_ERROR("连接出错{}",err);
+        LOG_ERROR("连接出错了{}",err);
+        close(sockfd);
     }
-    std::cout << "连接出错" << std::endl;
 }
 
 void Connector::resetChannel()
@@ -90,6 +96,7 @@ void Connector::resetChannel()
 
 int Connector::removeAndResetChannel()
 {
+    
     m_channel->disableAll();
     int fd = m_channel->fd();
     m_channel->remove();

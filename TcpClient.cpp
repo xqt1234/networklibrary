@@ -12,13 +12,12 @@ TcpClient::TcpClient(EventLoop *loop, const InetAddress &addr, std::string name)
 
 TcpClient::~TcpClient()
 {
-    std::cout << "析构被调用" << std::endl;
     disconnect();
 }
 
 void TcpClient::connect()
 {
-    m_connector->connect();
+    m_connector->start();
 }
 
 void TcpClient::disconnect()
@@ -32,7 +31,6 @@ void TcpClient::disconnect()
 
 void TcpClient::handNewConnection(int sockfd)
 {
-    std::cout << "有新连接" << std::endl;
     TcpConnectionPtr conn(new TcpConnection(m_loop, sockfd, m_addr));
     static int m_nextConnId = 0;
     conn->setConnId(m_nextConnId++);
