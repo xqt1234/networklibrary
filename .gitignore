@@ -1,5 +1,6 @@
 /lib
 /build
-/example/test
+/example/client_test/log/*
+/example/server_test/log/*
 /.vscode
 /example/*.log
