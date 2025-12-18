@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "EventLoop.h"
 #include "SocketTools.h"
+using namespace mymuduo;
 Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
     : m_serverAddr(serverAddr), m_loop(loop)
 {

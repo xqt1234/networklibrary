@@ -1,6 +1,7 @@
 #include "InetAddress.h"
 #include <arpa/inet.h>
 #include "Logger.h"
+using namespace mymuduo;
 InetAddress::InetAddress(uint16_t port, string ip)
 {
     sockaddr_in addr{};

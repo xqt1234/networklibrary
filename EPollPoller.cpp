@@ -2,7 +2,7 @@
 #include <sys/epoll.h>
 #include <errno.h>
 #include "Logger.h"
-
+using namespace mymuduo;
 const int kNew = -1;
 const int kAdded = 1;
 const int kDeleted = 2;

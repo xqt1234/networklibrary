@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <errno.h>
 
+using namespace mymuduo;
 Buffer::Buffer(int initialsize)
     :m_buf(kCheapPrepend + initialsize)
     , m_readIndex(kCheapPrepend)

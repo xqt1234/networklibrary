@@ -4,6 +4,7 @@
 #include "Logger.h"
 #include "Buffer.h"
 #include "Socket.h"
+using namespace mymuduo;
 TcpConnection::TcpConnection(EventLoop *loop, int cfd, InetAddress address)
     : m_fd(cfd), m_loop(loop), m_addr(address), m_channel(new Channel(cfd, loop)), m_state(StateE::kConnecting), m_highWaterMark(64 * 1024 * 1024), m_socket(new Socket(cfd))
 {

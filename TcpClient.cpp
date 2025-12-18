@@ -1,6 +1,7 @@
 #include "TcpClient.h"
 #include "TcpConnection.h"
 #include <iostream>
+using namespace mymuduo;
 TcpClient::TcpClient(EventLoop *loop, const InetAddress &addr, std::string name)
     : m_loop(loop)
     , m_addr(addr)
@@ -27,6 +28,12 @@ void TcpClient::disconnect()
     {
         m_connection->shutdown();
     }
+}
+
+TcpConnectionPtr TcpClient::connection()
+{
+    std::lock_guard<std::mutex> lock(m_conMtx);
+    return m_connection;
 }
 
 void TcpClient::handNewConnection(int sockfd)

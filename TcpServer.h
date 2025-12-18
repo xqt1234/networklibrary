@@ -13,34 +13,37 @@ using std::string;
  * 传递回调给给新连接tcpconnection。提供开始函数完成创建线程。
  * 作为核心路径分发新连接到eventloop，对应提供接口操作删除连接。该接口作为回调传入新连接中
  */
-class TcpServer
+namespace mymuduo
 {
-public:
-    
-private:
-    std::unique_ptr<Acceptor> m_acceptor;
-    ConnectionCallBack m_ConnectionCallBack;
-    MessageCallBack m_MessageCallBack;
-    uint64_t m_nextConnId{0};
-    std::unordered_map<uint64_t,TcpConnectionPtr> m_clients;
-    EventLoop* m_loop;
-    EventLoopThreadPoll* m_pool;
+    class TcpServer
+    {
+    public:
+    private:
+        std::unique_ptr<Acceptor> m_acceptor;
+        ConnectionCallBack m_ConnectionCallBack;
+        MessageCallBack m_MessageCallBack;
+        uint64_t m_nextConnId{0};
+        std::unordered_map<uint64_t, TcpConnectionPtr> m_clients;
+        EventLoop *m_loop;
+        EventLoopThreadPoll *m_pool;
 
-public:
-    TcpServer(EventLoop* loop, uint16_t port,string addr = "0.0.0.0");
-    ~TcpServer();
-    void newConnection(int sockfd, const InetAddress &peerAddr);
-    void start();
-    void setThreadNum(int num);
-    void setConnectionCallBack(const ConnectionCallBack& cb)
-    {
-        m_ConnectionCallBack = cb;
-    }
-    void setMessageCallBack(const MessageCallBack& cb)
-    {
-        m_MessageCallBack = cb;
-    }
-private:
-    void removeConnection(const TcpConnectionPtr& conn);
-    void removeConnectionInLoop(const TcpConnectionPtr& conn);
-};
+    public:
+        TcpServer(EventLoop *loop, uint16_t port, string addr = "0.0.0.0");
+        ~TcpServer();
+        void newConnection(int sockfd, const InetAddress &peerAddr);
+        void start();
+        void setThreadNum(int num);
+        void setConnectionCallBack(const ConnectionCallBack &cb)
+        {
+            m_ConnectionCallBack = cb;
+        }
+        void setMessageCallBack(const MessageCallBack &cb)
+        {
+            m_MessageCallBack = cb;
+        }
+
+    private:
+        void removeConnection(const TcpConnectionPtr &conn);
+        void removeConnectionInLoop(const TcpConnectionPtr &conn);
+    };
+}

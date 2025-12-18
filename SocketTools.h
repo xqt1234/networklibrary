@@ -1,4 +1,6 @@
 #pragma once
-
-bool isSelfConnect(int sockfd);
-int getSocketError(int sockfd);
+namespace mymuduo
+{
+    bool isSelfConnect(int sockfd);
+    int getSocketError(int sockfd);
+}

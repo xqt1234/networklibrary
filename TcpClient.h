@@ -5,31 +5,40 @@
 #include "CallBacks.h"
 #include <mutex>
 #include "TcpConnection.h"
-class TcpClient
+namespace mymuduo
 {
-private:
-    EventLoop* m_loop;
-    InetAddress m_addr;
-    std::string m_name;
-    bool m_isconnect;
-    std::unique_ptr<Connector> m_connector;
-    ConnectionCallBack m_ConnectionCallBack;
-    MessageCallBack m_MessageCallBack;
-    TcpConnectionPtr m_connection;
-    std::mutex m_conMtx;
-public:
-    TcpClient(EventLoop* loop,const InetAddress& addr,std::string name);
-    ~TcpClient();
-    void connect();
-    void disconnect();
-    void handNewConnection(int sockfd);
-    void setConnectionCallBack(const ConnectionCallBack& cb)
+    class TcpClient
     {
-        m_ConnectionCallBack = cb;
-    }
-    void setMessageCallBack(const MessageCallBack& cb)
-    {
-        m_MessageCallBack = cb;
-    }
-    void removeConnection(const TcpConnectionPtr& conn);
-};
+    private:
+        EventLoop *m_loop;
+        InetAddress m_addr;
+        std::string m_name;
+        bool m_isconnect;
+        std::unique_ptr<Connector> m_connector;
+        ConnectionCallBack m_ConnectionCallBack;
+        MessageCallBack m_MessageCallBack;
+        TcpConnectionPtr m_connection;
+        std::mutex m_conMtx;
+
+    public:
+        TcpClient(EventLoop *loop, const InetAddress &addr, std::string name);
+        ~TcpClient();
+        void connect();
+        void disconnect();
+        TcpConnectionPtr connection();
+        const std::string &name() const
+        {
+            return m_name;
+        }
+        void handNewConnection(int sockfd);
+        void setConnectionCallBack(const ConnectionCallBack &cb)
+        {
+            m_ConnectionCallBack = cb;
+        }
+        void setMessageCallBack(const MessageCallBack &cb)
+        {
+            m_MessageCallBack = cb;
+        }
+        void removeConnection(const TcpConnectionPtr &conn);
+    };
+}

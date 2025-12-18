@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <errno.h>
+using namespace mymuduo;
 bool isSelfConnect(int sockfd)
 {
     struct sockaddr_in local, peer;

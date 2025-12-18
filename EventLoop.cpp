@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "Logger.h"
 #include <sys/eventfd.h>
+using namespace mymuduo;
 const int kPollTimeMs = 20000;
 
 int createWakeupFd()

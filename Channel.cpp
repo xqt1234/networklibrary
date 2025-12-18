@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include <sys/epoll.h>
 #include "EventLoop.h"
+using namespace mymuduo;
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::kWriteEvent = EPOLLOUT;

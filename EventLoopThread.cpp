@@ -1,5 +1,5 @@
 #include "EventLoopThread.h"
-
+using namespace mymuduo;
 EventLoopThread::EventLoopThread()
 {
     m_thread = std::thread(std::bind(&EventLoopThread::EventLoopFunc, this));

@@ -1,5 +1,5 @@
 #include "EventLoopThreadPoll.h"
-
+using namespace mymuduo;
 EventLoopThreadPoll::EventLoopThreadPoll(EventLoop* baseLoop)
     :m_baseLoop(baseLoop)
 {

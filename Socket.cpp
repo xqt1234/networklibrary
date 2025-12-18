@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include <netinet/tcp.h>
 #include <sys/socket.h>
+using namespace mymuduo;
 Socket::Socket()
 {
     m_sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);

@@ -33,6 +33,14 @@ int main()
     client.connect();
     std::cout << "hello world" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(5));
+    if(client.connection() != nullptr && client.connection()->isConnected())
+    {
+        std::cout << "连接成功" << std::endl;
+    }else
+    {
+        std::cout << "连接失败" << std::endl;
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     loop.quit();
     loopthread.join();
     return 0;

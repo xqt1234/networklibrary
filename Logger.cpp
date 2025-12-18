@@ -1,5 +1,6 @@
 #include "Logger.h"
 #include <filesystem>
+using namespace mymuduo;
 const int maxSize = 100 * 1024 * 1024;
 Logger &Logger::getInstance()
 {
