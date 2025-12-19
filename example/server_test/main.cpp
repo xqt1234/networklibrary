@@ -7,29 +7,40 @@
 #include "Logger.h"
 #include "HttpResponse.h"
 #include <signal.h>
+#include "TimerQueue.h"
+#include "TimeStamp.h"
+using namespace std::placeholders;
 class EchoServer
 {
 private:
-    TcpServer m_server;
-    EventLoop *m_loop;
+    mymuduo::TcpServer m_server;
+    mymuduo::EventLoop *m_loop;
+    mymuduo::TimerQueue m_timerqueue;
 
 public:
-    EchoServer(EventLoop *loop, uint16_t port, std::string ipaddr)
-        : m_loop(loop), m_server(loop, port, ipaddr)
+    EchoServer(mymuduo::EventLoop *loop, uint16_t port, std::string ipaddr)
+        : m_loop(loop), m_server(loop, port, ipaddr),m_timerqueue(loop)
     {
         m_server.setConnectionCallBack(std::bind(&EchoServer::newConnection, this, _1));
         m_server.setMessageCallBack(std::bind(&EchoServer::onHttpMessage, this, _1, _2));
     }
-    void newConnection(const TcpConnectionPtr &conn)
+    void newConnection(const mymuduo::TcpConnectionPtr &conn)
     {
         if (conn->isConnected())
         {
             //std::cout << "启用外面的回调" << std::endl;
+            // mymuduo::TimeStamp newt = mymuduo::TimeStamp::now();
+            // mymuduo::AddTime(newt,4);
+            // m_timerqueue.addTimer(std::bind(&EchoServer::seyHelloAfterTime,this),newt,0);
         }
         else
         {
             //std::cout << "断开连接" << std::endl;
         }
+    }
+    void seyHelloAfterTime()
+    {
+        std::cout << "hello oooooo-----" << std::endl;
     }
     void start()
     {
@@ -39,7 +50,7 @@ public:
     {
         m_server.setThreadNum(num);
     }
-    void onMessage(const TcpConnectionPtr &conn, Buffer *buf)
+    void onMessage(const mymuduo::TcpConnectionPtr &conn, mymuduo::Buffer *buf)
     {
         std::string msg = buf->readAllAsString();
         if (!msg.empty() && msg.back() == '\n')
@@ -54,7 +65,7 @@ public:
         conn->send(msg + "aaaaa\n");
         // conn->shutdown();
     }
-    void onHttpMessage(const TcpConnectionPtr &conn, Buffer *buf)
+    void onHttpMessage(const mymuduo::TcpConnectionPtr &conn, mymuduo::Buffer *buf)
     {
         std::string request = buf->readAllAsString();
         std::string method, path;
@@ -69,8 +80,8 @@ public:
 int main()
 {
     signal(SIGPIPE, SIG_IGN);
-    Logger::getInstance().setLogLevel(LogLevel::DEBUG);
-    EventLoop loop;
+    mymuduo::Logger::getInstance().setLogLevel(mymuduo::LogLevel::DEBUG);
+    mymuduo::EventLoop loop;
     EchoServer server(&loop, 10000, "192.168.105.2");
     server.setThreadNum(4);
     server.start();

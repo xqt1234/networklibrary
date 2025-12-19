@@ -1,7 +1,7 @@
 #include "TimeStamp.h"
 #include <sys/time.h>
 using namespace mymuduo;
-static const int kMicroSecondsPerSecond = 1000 * 1000;
+const int TimeStamp::kMicroSecondsPerSecond = 1000 * 1000;
 TimeStamp::TimeStamp(int64_t microSecondsSinceEpoch)
     :m_microSecondsSinceEpoch(microSecondsSinceEpoch)
 {

@@ -1,4 +1,5 @@
 #pragma once
+#include <sys/epoll.h>
 #include <unordered_map>
 #include <vector>
 #include "Channel.h"
@@ -13,7 +14,7 @@ namespace mymuduo
     {
     public:
         using ChannelList = std::vector<Channel *>;
-        using EventList = std::vector<struct epoll_event>;
+        using EventList = std::vector<struct ::epoll_event>;
         using ChannelMap = std::unordered_map<int, Channel *>;
 
     private:

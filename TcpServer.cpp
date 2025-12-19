@@ -5,6 +5,7 @@
 #include "Logger.h"
 #include "EventLoop.h"
 #include "TcpConnection.h"
+using namespace mymuduo;
 TcpServer::TcpServer(EventLoop *loop, uint16_t port, string addr)
     : m_acceptor(new Acceptor(loop, InetAddress(port, addr))), m_loop(loop), m_pool(new EventLoopThreadPoll(loop))
 {

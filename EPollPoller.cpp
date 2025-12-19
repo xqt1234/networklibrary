@@ -1,5 +1,4 @@
 #include "EPollPoller.h"
-#include <sys/epoll.h>
 #include <errno.h>
 #include "Logger.h"
 using namespace mymuduo;
@@ -34,7 +33,7 @@ bool EPollPoller::hasChannel(Channel *channel) const
 
 void EPollPoller::fillActiveChannels(int timeout, ChannelList *activeChannels)
 {
-    int numEvents = ::epoll_wait(m_epollfd, &(*m_events.begin()), static_cast<int>(m_events.size()), timeout);
+    int numEvents = ::epoll_wait(m_epollfd, &(*(m_events.begin())), static_cast<int>(m_events.size()), timeout);
     int savedErrno = errno;
     if (numEvents > 0)
     {

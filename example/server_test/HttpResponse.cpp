@@ -1,6 +1,7 @@
 #include "HttpResponse.h"
 #include <fstream>
 #include "Logger.h"
+using namespace mymuduo;
 HttpResponse::HttpResponse()
 {
     createCache();

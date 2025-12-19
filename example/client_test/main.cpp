@@ -7,7 +7,8 @@
 #include "Logger.h"
 #include <signal.h>
 #include "TcpClient.h"
-void onConnection(const TcpConnectionPtr& conn)
+
+void onConnection(const mymuduo::TcpConnectionPtr& conn)
 {
     std::cout << "被调用" << std::endl;
     if(conn->isConnected())
@@ -20,15 +21,15 @@ void onConnection(const TcpConnectionPtr& conn)
 }
 int main()
 {
-    EventLoop loop;
+    mymuduo::EventLoop loop;
     std::thread loopthread([&loop]{
         std::cout << "Loop线程启动" << std::endl;
         loop.loop();
         std::cout << "Loop线程结束" << std::endl;
     });
     
-    InetAddress addr(10000,"192.168.105.2");
-    TcpClient client(&loop,addr,"test");
+    mymuduo::InetAddress addr(10000,"192.168.105.2");
+    mymuduo::TcpClient client(&loop,addr,"test");
     client.setConnectionCallBack(&onConnection);
     client.connect();
     std::cout << "hello world" << std::endl;
