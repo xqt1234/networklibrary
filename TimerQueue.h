@@ -5,12 +5,13 @@
 #include "TimeStamp.h"
 #include "Timer.h"
 #include "Channel.h"
-#include "EventLoop.h"
+
 #include "TimerId.h"
 #include <unordered_set>
 #include <atomic>
 namespace mymuduo
 {
+    class EventLoop;
     class TimerQueue
     {
     public:
@@ -26,7 +27,7 @@ namespace mymuduo
         std::atomic<bool> m_handdingCallBacks{false};
     public:
         TimerQueue(EventLoop * loop);
-        ~TimerQueue() = default;
+        ~TimerQueue();
         TimerId addTimer(TimerCallBack cb,TimeStamp startTime,double interval);
         void handleRead();
         void cancelInLoop(TimerId timer);

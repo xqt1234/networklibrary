@@ -2,23 +2,36 @@
 #include "TcpConnection.h"
 #include <iostream>
 using namespace mymuduo;
+const int TcpClient::kInitRetryMs = 500;
+const int TcpClient::kMaxRetryMs = 30 * 1000;
 TcpClient::TcpClient(EventLoop *loop, const InetAddress &addr, std::string name)
     : m_loop(loop)
     , m_addr(addr)
     , m_name(name)
     , m_connector(new Connector(loop,addr))
+    , m_currentRetryMs(kInitRetryMs)
 {
     m_connector->setNewConnectionCallback(std::bind(&TcpClient::handNewConnection,this,std::placeholders::_1));
+    m_connector->setRetryCallBack(std::bind(&TcpClient::retryConnection,this));
 }
 
 TcpClient::~TcpClient()
 {
+    m_retry = false;
+    if(m_timerid.hasSet())
+    {
+        std::cout << "析构tcpclient停止定时器" << std::endl;
+        m_loop->cancelTimer(m_timerid);
+    }
     disconnect();
 }
 
 void TcpClient::connect()
 {
-    m_connector->start();
+    m_isconnect = true;
+    m_loop->runInLoop([this]{
+        m_connector->connect();
+    });
 }
 
 void TcpClient::disconnect()
@@ -28,6 +41,11 @@ void TcpClient::disconnect()
     {
         m_connection->shutdown();
     }
+}
+
+void mymuduo::TcpClient::setRetry(bool retry)
+{
+    m_retry = retry;
 }
 
 TcpConnectionPtr TcpClient::connection()
@@ -59,4 +77,18 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
         m_connection.reset();
     }
     m_loop->queueInLoop(std::bind(&TcpConnection::connectDestroyed,conn));
+}
+
+void mymuduo::TcpClient::retryConnection()
+{
+    if(m_retry)
+    {
+        m_timerid = m_loop->runAfter([this]{
+            std::cout << "重连中....." << std::endl;
+            m_connector->connect();
+        },m_currentRetryMs/1000.0);
+        m_currentRetryMs = m_currentRetryMs * 2;
+        std::cout << m_currentRetryMs << std::endl;
+        m_currentRetryMs = std::min(kMaxRetryMs,m_currentRetryMs);
+    }
 }

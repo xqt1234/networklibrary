@@ -5,6 +5,8 @@
 #include "CallBacks.h"
 #include <mutex>
 #include "TcpConnection.h"
+#include <atomic>
+#include <optional>
 namespace mymuduo
 {
     class TcpClient
@@ -19,12 +21,17 @@ namespace mymuduo
         MessageCallBack m_MessageCallBack;
         TcpConnectionPtr m_connection;
         std::mutex m_conMtx;
-
+        std::atomic<bool> m_retry{false};
+        static const int kInitRetryMs;
+        static const int kMaxRetryMs;
+        int m_currentRetryMs;
+        TimerId m_timerid;
     public:
         TcpClient(EventLoop *loop, const InetAddress &addr, std::string name);
         ~TcpClient();
         void connect();
         void disconnect();
+        void setRetry(bool retry);
         TcpConnectionPtr connection();
         const std::string &name() const
         {
@@ -40,5 +47,6 @@ namespace mymuduo
             m_MessageCallBack = cb;
         }
         void removeConnection(const TcpConnectionPtr &conn);
+        void retryConnection();
     };
 }

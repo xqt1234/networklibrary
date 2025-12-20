@@ -28,6 +28,6 @@ namespace mymuduo
     inline TimeStamp AddTime(TimeStamp timestamp,double seconds)
     {
         int64_t delta = static_cast<int64_t>(seconds * TimeStamp::kMicroSecondsPerSecond);
-        return TimeStamp(delta);
+        return TimeStamp(timestamp.microSinceEpoch() + delta);
     }
 }

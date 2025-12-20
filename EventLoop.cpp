@@ -16,6 +16,7 @@ int createWakeupFd()
 }
 EventLoop::EventLoop()
     : m_poller(new EPollPoller()), m_threadid(std::this_thread::get_id()), m_wakeupFd(createWakeupFd()), m_wakeupChannel(new Channel(m_wakeupFd, this))
+    ,m_timerQueue(new TimerQueue(this))
 {
     m_wakeupChannel->setReadCallBack(std::bind(&EventLoop::handleRead, this));
     m_wakeupChannel->enableReading();
@@ -86,6 +87,29 @@ void EventLoop::quit()
     {
         wakeup();
     }
+    
+}
+
+TimerId EventLoop::runAfter(TimerCallBack cb,double seconds)
+{
+    TimeStamp tmp(AddTime(TimeStamp::now(),seconds));
+    return m_timerQueue->addTimer(std::move(cb),tmp,0);
+}
+
+TimerId EventLoop::runAt(TimerCallBack cb, TimeStamp tTime)
+{
+    return m_timerQueue->addTimer(std::move(cb),tTime,0);
+}
+
+TimerId EventLoop::runEvery(TimerCallBack cb, double interval)
+{
+    TimeStamp tmp(AddTime(TimeStamp::now(),interval));
+    return m_timerQueue->addTimer(std::move(cb),tmp,interval);
+}
+
+void EventLoop::cancelTimer(TimerId timerid)
+{
+    m_timerQueue->cancelInLoop(timerid);
 }
 
 void EventLoop::wakeup()

@@ -30,8 +30,12 @@ public:
         {
             //std::cout << "启用外面的回调" << std::endl;
             // mymuduo::TimeStamp newt = mymuduo::TimeStamp::now();
-            // mymuduo::AddTime(newt,4);
-            // m_timerqueue.addTimer(std::bind(&EchoServer::seyHelloAfterTime,this),newt,0);
+            // mymuduo::TimeStamp res = mymuduo::AddTime(newt,4);
+            // std::cout << res.microSinceEpoch() << std::endl;
+            // m_timerqueue.addTimer(std::bind(&EchoServer::seyHelloAfterTime,this),res,0);
+            //TimeStamp tmp(AddTime(TimeStamp::now(),seconds));
+            //std::cout << "当前时间" << newt.microSinceEpoch() << std::endl;
+            conn->getLoop()->runAfter(std::bind(&EchoServer::seyHelloAfterTime,this),5);
         }
         else
         {
@@ -40,6 +44,7 @@ public:
     }
     void seyHelloAfterTime()
     {
+        std::cout << "当前时间" << mymuduo::TimeStamp().now().microSinceEpoch() << std::endl;
         std::cout << "hello oooooo-----" << std::endl;
     }
     void start()

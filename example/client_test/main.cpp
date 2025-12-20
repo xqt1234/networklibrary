@@ -8,13 +8,14 @@
 #include <signal.h>
 #include "TcpClient.h"
 
-void onConnection(const mymuduo::TcpConnectionPtr& conn)
+void onConnection(const mymuduo::TcpConnectionPtr &conn)
 {
     std::cout << "被调用" << std::endl;
-    if(conn->isConnected())
+    if (conn->isConnected())
     {
         std::cout << "建立连接" << std::endl;
-    }else
+    }
+    else
     {
         std::cout << "断开连接" << std::endl;
     }
@@ -22,25 +23,31 @@ void onConnection(const mymuduo::TcpConnectionPtr& conn)
 int main()
 {
     mymuduo::EventLoop loop;
-    std::thread loopthread([&loop]{
+    std::thread loopthread([&loop]
+                           {
         std::cout << "Loop线程启动" << std::endl;
         loop.loop();
-        std::cout << "Loop线程结束" << std::endl;
-    });
-    
-    mymuduo::InetAddress addr(10000,"192.168.105.2");
-    mymuduo::TcpClient client(&loop,addr,"test");
-    client.setConnectionCallBack(&onConnection);
-    client.connect();
-    std::cout << "hello world" << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-    if(client.connection() != nullptr && client.connection()->isConnected())
+        std::cout << "Loop线程结束" << std::endl; });
     {
-        std::cout << "连接成功" << std::endl;
-    }else
-    {
-        std::cout << "连接失败" << std::endl;
+        mymuduo::InetAddress addr(10000, "192.168.105.2");
+        mymuduo::TcpClient client(&loop, addr, "test");
+        client.setConnectionCallBack(&onConnection);
+        client.setRetry(true);
+        client.connect();
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        
     }
+    std::cout << "hello world" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        // if (client.connection() != nullptr && client.connection()->isConnected())
+        // {
+        //     std::cout << "连接成功" << std::endl;
+        // }
+        // else
+        // {
+        //     std::cout << "连接失败" << std::endl;
+        // }
+
     std::this_thread::sleep_for(std::chrono::seconds(1));
     loop.quit();
     loopthread.join();

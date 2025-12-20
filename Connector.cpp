@@ -10,20 +10,32 @@ Connector::Connector(EventLoop *loop, const InetAddress &serverAddr)
 
 Connector::~Connector()
 {
-    if(m_channel)
+    if (m_channel)
     {
-        m_channel->disableAll(); // 禁用所有事件
-        m_channel->remove();     // 
+        auto ch = std::move(m_channel);
+        auto ch_shared = std::shared_ptr<Channel>(std::move(ch));
+        m_loop->runInLoop([ch_shared]() {
+            ch_shared->disableAll();
+            ch_shared->remove();
+            close(ch_shared->fd());
+            std::cout << "Connector析构被调用" << std::endl;
+        });
     }
-}
-
-void Connector::start()
-{
-    m_loop->runInLoop(std::bind(&Connector::connect,this));
 }
 
 void Connector::connect()
 {
+    if (m_channel)
+    {
+        auto ch = std::move(m_channel);
+        auto ch_shared = std::shared_ptr<Channel>(std::move(ch));
+        m_loop->runInLoop([ch_shared]() {
+            ch_shared->disableAll();
+            ch_shared->remove();
+            close(ch_shared->fd());
+            std::cout << "Connector析构被调用" << std::endl;
+        });
+    }
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
     if (sockfd < 0)
     {
@@ -70,6 +82,7 @@ void Connector::handleWrite()
         {
             LOG_ERROR("连接错误{}", m_serverAddr.toIpPortString());
             close(fd);
+            //m_retryCallBack();
         }
         else
         {
@@ -84,9 +97,13 @@ void Connector::handleError()
     if (m_state == States::kConnecting)
     {
         int sockfd = removeAndResetChannel();
-        int err = getSocketError(sockfd);
-        LOG_ERROR("连接出错了{}",err);
-        close(sockfd);
+        if (sockfd > 0)
+        {
+            int err = getSocketError(sockfd);
+            LOG_ERROR("连接出错了{}", err);
+            close(sockfd);
+        }
+        m_retryCallBack();
     }
 }
 
@@ -97,7 +114,11 @@ void Connector::resetChannel()
 
 int Connector::removeAndResetChannel()
 {
-    
+    if (m_channel == nullptr)
+    {
+        std::cout << "channel已经被析构" << std::endl;
+        return -1;
+    }
     m_channel->disableAll();
     int fd = m_channel->fd();
     m_channel->remove();

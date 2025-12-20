@@ -5,6 +5,7 @@
 #include "EPollPoller.h"
 #include "Channel.h"
 #include <mutex>
+#include "TimerQueue.h"
 /**
  * @brief 核心类，在这里循环阻塞检查epoll中是否有事件发生和执行传入的回调函数，
  * 等待新事件的发生，所有的读写，事件处理的源头。
@@ -34,6 +35,7 @@ namespace mymuduo
         int m_wakeupFd;
         std::unique_ptr<Channel> m_wakeupChannel;
         std::atomic<bool> m_callingPendingFunctors{false};
+        std::unique_ptr<TimerQueue> m_timerQueue;
 
     public:
         EventLoop();
@@ -48,7 +50,10 @@ namespace mymuduo
         {
             return m_threadid == std::this_thread::get_id();
         }
-
+        TimerId runAfter(TimerCallBack cb,double seconds);
+        TimerId runAt(TimerCallBack cb,TimeStamp tTime);
+        TimerId runEvery(TimerCallBack cb,double interval);
+        void cancelTimer(TimerId timerid);
     private:
         void wakeup();
         void handleRead();

@@ -1,6 +1,7 @@
 #include "TimerQueue.h"
 #include <sys/timerfd.h>
 #include "Logger.h"
+#include "EventLoop.h"
 using namespace mymuduo;
 
 
@@ -60,6 +61,18 @@ TimerQueue::TimerQueue(EventLoop *loop)
     m_channel.enableReading();
 }
 
+mymuduo::TimerQueue::~TimerQueue()
+{
+    std::cout << "析构timerqueue" << std::endl;
+    m_channel.disableAll();
+    m_channel.remove();
+    ::close(m_timerfd);
+    for(auto& val : m_TimerSet)
+    {
+        delete val.second;
+    }
+}
+
 TimerId TimerQueue::addTimer(TimerCallBack cb, TimeStamp startTime, double interval)
 {
     Timer* timer = new Timer(cb,startTime,interval);
@@ -93,6 +106,7 @@ void mymuduo::TimerQueue::resetTimer(std::vector<Entry>& expiredVec,TimeStamp no
             insert(val.second);
         }else
         {
+            std::cout << "resetTimer里面清理,析构" << std::endl;
             delete val.second;
         }
     }
@@ -107,6 +121,7 @@ void mymuduo::TimerQueue::resetTimer(std::vector<Entry>& expiredVec,TimeStamp no
 
 void mymuduo::TimerQueue::cancelInLoop(TimerId timer)
 {
+    std::cout << "调用了在loop中停止timer" << std::endl;
     ActiveEntry tmp(timer.m_timer,timer.m_seq);
     auto it = m_managerSet.find(tmp);
     if(it != m_managerSet.end())
