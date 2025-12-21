@@ -18,7 +18,6 @@ Connector::~Connector()
             ch_shared->disableAll();
             ch_shared->remove();
             close(ch_shared->fd());
-            std::cout << "Connector析构被调用" << std::endl;
         });
     }
 }
@@ -33,7 +32,6 @@ void Connector::connect()
             ch_shared->disableAll();
             ch_shared->remove();
             close(ch_shared->fd());
-            std::cout << "Connector析构被调用" << std::endl;
         });
     }
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
@@ -116,7 +114,6 @@ int Connector::removeAndResetChannel()
 {
     if (m_channel == nullptr)
     {
-        std::cout << "channel已经被析构" << std::endl;
         return -1;
     }
     m_channel->disableAll();

@@ -20,7 +20,6 @@ TcpClient::~TcpClient()
     m_retry = false;
     if(m_timerid.hasSet())
     {
-        std::cout << "析构tcpclient停止定时器" << std::endl;
         m_loop->cancelTimer(m_timerid);
     }
     disconnect();
@@ -79,16 +78,14 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
     m_loop->queueInLoop(std::bind(&TcpConnection::connectDestroyed,conn));
 }
 
-void mymuduo::TcpClient::retryConnection()
+void TcpClient::retryConnection()
 {
     if(m_retry)
     {
         m_timerid = m_loop->runAfter([this]{
-            std::cout << "重连中....." << std::endl;
             m_connector->connect();
         },m_currentRetryMs/1000.0);
         m_currentRetryMs = m_currentRetryMs * 2;
-        std::cout << m_currentRetryMs << std::endl;
         m_currentRetryMs = std::min(kMaxRetryMs,m_currentRetryMs);
     }
 }

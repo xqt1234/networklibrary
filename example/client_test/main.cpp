@@ -34,7 +34,7 @@ int main()
         client.setConnectionCallBack(&onConnection);
         client.setRetry(true);
         client.connect();
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        //std::this_thread::sleep_for(std::chrono::seconds(10));
         
     }
     std::cout << "hello world" << std::endl;

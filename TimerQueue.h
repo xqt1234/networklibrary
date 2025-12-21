@@ -21,6 +21,7 @@ namespace mymuduo
         std::set<Entry> m_TimerSet;// 正常set，时间排序
         std::set<ActiveEntry> m_managerSet;
         std::set<ActiveEntry> m_canceledSet;
+        std::set<ActiveEntry> m_deleteSet;
         int m_timerfd;
         Channel m_channel;
         EventLoop* m_loop;
