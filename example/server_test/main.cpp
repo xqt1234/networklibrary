@@ -81,16 +81,31 @@ public:
         conn->send(res);
     }
 };
-
+mymuduo::EventLoop* loop = nullptr;
+void quitLoop()
+{
+    loop->quit();
+}
+void runLoop()
+{
+    std::cout << "启动loop" << std::endl;
+    if(loop!=nullptr)
+    {
+        loop->loop();
+    }
+}
 int main()
 {
     signal(SIGPIPE, SIG_IGN);
     mymuduo::Logger::getInstance().setLogLevel(mymuduo::LogLevel::DEBUG);
-    mymuduo::EventLoop loop;
-    EchoServer server(&loop, 10000, "192.168.105.2");
+    loop = new mymuduo::EventLoop();
+    EchoServer server(loop, 10000, "192.168.105.2");
     server.setThreadNum(4);
     server.start();
-    loop.loop();
+    std::thread t(runLoop);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    quitLoop();
+    t.join();
     std::cout << "hello world" << std::endl;
     return 0;
 }

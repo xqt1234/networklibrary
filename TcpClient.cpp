@@ -10,6 +10,7 @@ TcpClient::TcpClient(EventLoop *loop, const InetAddress &addr, std::string name)
     , m_name(name)
     , m_connector(new Connector(loop,addr))
     , m_currentRetryMs(kInitRetryMs)
+    , m_connection()
 {
     m_connector->setNewConnectionCallback(std::bind(&TcpClient::handNewConnection,this,std::placeholders::_1));
     m_connector->setRetryCallBack(std::bind(&TcpClient::retryConnection,this));
@@ -35,6 +36,7 @@ void TcpClient::connect()
 
 void TcpClient::disconnect()
 {
+    m_isconnect = false;
     std::lock_guard<std::mutex> lock(m_conMtx);
     if(m_connection)
     {
@@ -49,6 +51,10 @@ void mymuduo::TcpClient::setRetry(bool retry)
 
 TcpConnectionPtr TcpClient::connection()
 {
+    if(!m_isconnect)
+    {
+        return nullptr;
+    }
     std::lock_guard<std::mutex> lock(m_conMtx);
     return m_connection;
 }
@@ -71,6 +77,7 @@ void TcpClient::handNewConnection(int sockfd)
 
 void TcpClient::removeConnection(const TcpConnectionPtr& conn)
 {
+    m_isconnect = false;
     {
         std::lock_guard<std::mutex> lock(m_conMtx);
         m_connection.reset();
@@ -80,7 +87,7 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
 
 void TcpClient::retryConnection()
 {
-    if(m_retry)
+    if(m_retry && m_isconnect)
     {
         m_timerid = m_loop->runAfter([this]{
             m_connector->connect();

@@ -2,14 +2,13 @@
 #include "CallBacks.h"
 #include "InetAddress.h"
 #include "Socket.h"
-
+#include "Channel.h"
 /**
  * @brief 主要思路就是设置监听，把自己放入主loop中，接收并处理新连接事件，所有的新连接入口
  *
  */
 namespace mymuduo
 {
-    class Channel;
     class EventLoop;
     class Acceptor
     {
@@ -21,7 +20,7 @@ namespace mymuduo
         NewConnectionCallback m_NewConnectionCallback;
         // EventCallBack m_test;
         bool m_listenning{false};
-        Channel *m_channel;
+        Channel m_channel;
         EventLoop *m_loop;
 
     public:

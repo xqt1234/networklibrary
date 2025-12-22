@@ -25,8 +25,8 @@ namespace mymuduo
         uint64_t m_nextConnId{0};
         std::unordered_map<uint64_t, TcpConnectionPtr> m_clients;
         EventLoop *m_loop;
-        EventLoopThreadPoll *m_pool;
-
+        //EventLoopThreadPoll *m_pool;
+        std::shared_ptr<EventLoopThreadPoll>m_pool;
     public:
         TcpServer(EventLoop *loop, uint16_t port, string addr = "0.0.0.0");
         ~TcpServer();

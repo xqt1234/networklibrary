@@ -15,7 +15,7 @@ namespace mymuduo
         EventLoop *m_loop;
         InetAddress m_addr;
         std::string m_name;
-        bool m_isconnect;
+        std::atomic<bool> m_isconnect{false};
         std::unique_ptr<Connector> m_connector;
         ConnectionCallBack m_ConnectionCallBack;
         MessageCallBack m_MessageCallBack;
