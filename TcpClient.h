@@ -29,9 +29,8 @@ namespace mymuduo
     public:
         TcpClient(EventLoop *loop, const InetAddress &addr, std::string name);
         ~TcpClient();
-        void connect();
+        void connect(bool retry = false);
         void disconnect();
-        void setRetry(bool retry);
         TcpConnectionPtr connection();
         const std::string &name() const
         {

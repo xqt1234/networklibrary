@@ -32,8 +32,7 @@ int main()
         mymuduo::InetAddress addr(10000, "192.168.105.2");
         mymuduo::TcpClient client(&loop, addr, "test");
         client.setConnectionCallBack(&onConnection);
-        client.setRetry(true);
-        client.connect();
+        client.connect(true);
         //std::this_thread::sleep_for(std::chrono::seconds(10));
         
     }
