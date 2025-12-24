@@ -17,18 +17,19 @@
  * 通过swap，直接换数据，效率高。
  *
  */
+
 namespace mymuduo
 {
 #define LOG_DEBUG(fmt, ...) \
-    Logger::getInstance().log(LogLevel::DEBUG, std::source_location::current(), fmt, ##__VA_ARGS__)
+    mymuduo::Logger::getInstance().log(mymuduo::LogLevel::DEBUG, std::source_location::current(), fmt, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...) \
-    Logger::getInstance().log(LogLevel::INFO, std::source_location::current(), fmt, ##__VA_ARGS__)
+    mymuduo::Logger::getInstance().log(mymuduo::LogLevel::INFO, std::source_location::current(), fmt, ##__VA_ARGS__)
 #define LOG_WARN(fmt, ...) \
-    Logger::getInstance().log(LogLevel::WARN, std::source_location::current(), fmt, ##__VA_ARGS__)
+    mymuduo::Logger::getInstance().log(mymuduo::LogLevel::WARN, std::source_location::current(), fmt, ##__VA_ARGS__)
 #define LOG_ERROR(fmt, ...) \
-    Logger::getInstance().log(LogLevel::ERROR, std::source_location::current(), fmt, ##__VA_ARGS__)
+    mymuduo::Logger::getInstance().log(mymuduo::LogLevel::ERROR, std::source_location::current(), fmt, ##__VA_ARGS__)
 #define LOG_FATAL(fmt, ...) \
-    Logger::getInstance().log(LogLevel::FATAL, std::source_location::current(), fmt, ##__VA_ARGS__)
+    mymuduo::Logger::getInstance().log(mymuduo::LogLevel::FATAL, std::source_location::current(), fmt, ##__VA_ARGS__)
     enum class LogLevel
     {
         INFO,
