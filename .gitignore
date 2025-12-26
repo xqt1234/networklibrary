@@ -5,7 +5,7 @@
 /example/client_test/client_test
 /example/server_test/log/*
 /example/server_test/server_test
-/.vscode
+.vscode/
 /example/*.log
 /include
 /example/log/*
