@@ -26,11 +26,14 @@ namespace mymuduo
         size_t readableBytes();
         std::string readAsString(int len);
         std::string readAllAsString();
+        void retrieve(size_t len);
+        void retrieveAll();
         void append(const char *src, int len);
+        const char* peek() const;
 
     private:
         char *begin() { return &(*m_buf.begin()); }
-
+        const char *begin()const { return &(*m_buf.begin()); }
         void makeSpace(size_t len);
     };
 }

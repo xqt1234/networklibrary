@@ -73,6 +73,22 @@ std::string Buffer::readAllAsString()
     return result;
 }
 
+void mymuduo::Buffer::retrieve(size_t len)
+{
+    if(len < readableBytes())
+    {
+        m_readIndex+=len;
+    }else
+    {
+        retrieveAll();
+    }
+}
+
+void mymuduo::Buffer::retrieveAll()
+{
+    m_readIndex = m_writeIndex = kCheapPrepend;
+}
+
 void Buffer::append(const char *src, int len)
 {
     if(len > writeableBytes())
@@ -81,6 +97,11 @@ void Buffer::append(const char *src, int len)
     }
     std::copy(src,src + len,begin() + m_writeIndex);
     m_writeIndex+=len;
+}
+
+const char *Buffer::peek() const
+{
+    return begin()+ m_readIndex;
 }
 
 void Buffer::makeSpace(size_t len)
