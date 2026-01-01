@@ -12,6 +12,7 @@ EPollPoller::EPollPoller()
 
 EPollPoller::~EPollPoller()
 {
+    ::close(m_epollfd);
 }
 
 void EPollPoller::removeChannel(Channel *channel)

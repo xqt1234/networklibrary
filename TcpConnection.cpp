@@ -4,6 +4,7 @@
 #include "Logger.h"
 #include "Buffer.h"
 #include "Socket.h"
+#include "protoBuilder.h"
 using namespace mymuduo;
 TcpConnection::TcpConnection(EventLoop *loop, int cfd, InetAddress address)
     : m_fd(cfd), m_loop(loop), m_addr(address), m_channel(new Channel(cfd, loop)), m_state(StateE::kConnecting), m_highWaterMark(64 * 1024 * 1024), m_socket(new Socket(cfd))
@@ -40,7 +41,25 @@ void TcpConnection::connectDestroyed()
     m_channel->remove();
 }
 
-void TcpConnection::send(const std::string& str)
+// void TcpConnection::send(const std::string& str)
+// {
+//     sendInLoop(str.data(), str.length());
+// }
+
+void mymuduo::TcpConnection::send(const std::string &str, bool useProto)
+{
+    if(useProto)
+    {
+        ProtoBuilder::enCodeRequest(str,[this](const std::string res){
+            sendInLoop(res.data(), res.length());
+        });
+    }else
+    {
+        sendInLoop(str.data(), str.length());
+    }
+}
+
+void mymuduo::TcpConnection::sendWithoutProto(const std::string &str)
 {
     sendInLoop(str.data(), str.length());
 }

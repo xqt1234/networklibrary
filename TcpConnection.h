@@ -41,7 +41,6 @@ namespace mymuduo
         CloseCallBack m_CloseCallBack;
         uint64_t m_connId;
         std::unique_ptr<Socket> m_socket;
-
     public:
         TcpConnection(EventLoop *loop, int cfd, InetAddress address);
         ~TcpConnection();
@@ -68,7 +67,8 @@ namespace mymuduo
             m_WriteCompleteCallBack = cb;
         }
         // 右值版本直接使用的时候std::move()得了
-        void send(const std::string &str);
+        void send(const std::string &str,bool useProto = true);
+        void sendWithoutProto(const std::string &str);
         void send(const char *data, int len);
 
         Buffer *inputBuffer()
