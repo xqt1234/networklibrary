@@ -49,6 +49,10 @@ namespace mymuduo
         void connectDestroyed();
         void setConnId(uint64_t connid) { m_connId = connid; }
         uint64_t getConnId() { return m_connId; }
+        const InetAddress& getAddr() const
+        {
+            return m_addr;
+        }
         bool isConnected() { return m_state == StateE::kConnected; }
         void setConnectionCallBack(const ConnectionCallBack &cb)
         {

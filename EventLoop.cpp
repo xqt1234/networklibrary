@@ -38,6 +38,10 @@ void EventLoop::loop()
         m_activeList.clear();
         m_poller->fillActiveChannels(kPollTimeMs, &m_activeList);
         m_eventHandling = true;
+        if(m_quit)
+        {
+            break;
+        }
         for (Channel *channel : m_activeList)
         {
             channel->handleEvent();
@@ -83,11 +87,11 @@ void EventLoop::removeChannel(Channel *channel)
 void EventLoop::quit()
 {
     m_quit = true;
-    if (isInLoopThread())
-    {
-        wakeup();
-    }
-    
+    wakeup();
+    // if (isInLoopThread())
+    // {
+    //     wakeup();
+    // }
 }
 
 TimerId EventLoop::runAfter(TimerCallBack cb,double seconds)

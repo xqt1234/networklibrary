@@ -93,13 +93,14 @@ void EPollPoller::update(int option, Channel *channel)
     event.events = channel->events();
     if (::epoll_ctl(m_epollfd, option, fd, &event) < 0)
     {
+        int tErrno = errno;
         if (option == EPOLL_CTL_DEL)
         {
             LOG_ERROR("epoll ctl删除连接错误");
         }
         else
         {
-            LOG_ERROR("epoll ctl 其他错误");
+            LOG_ERROR("epoll ctl 其他错误{}",tErrno);
         }
     }
 }

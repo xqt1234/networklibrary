@@ -14,7 +14,7 @@ Channel::Channel(int fd,EventLoop* loop)
 
 Channel::~Channel()
 {
-    LOG_DEBUG("析构了Channel channelfd: {}",m_fd);
+    // LOG_DEBUG("析构了Channel channelfd: {}",m_fd);
 }
 
 void Channel::handleEvent()

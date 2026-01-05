@@ -31,6 +31,7 @@ void Connector::connect()
         m_loop->runInLoop([ch_shared]() {
             ch_shared->disableAll();
             ch_shared->remove();
+            std::cout << "清理之前的连接" << std::endl;
             close(ch_shared->fd());
         });
     }

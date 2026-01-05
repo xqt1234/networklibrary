@@ -7,6 +7,7 @@ EventLoopThreadPoll::EventLoopThreadPoll(EventLoop* baseLoop)
 
 EventLoopThreadPoll::~EventLoopThreadPoll()
 {
+    
 }
 
 void EventLoopThreadPoll::threadnum(int num)
@@ -18,7 +19,7 @@ void EventLoopThreadPoll::start()
 {
     for(int i = 0;i < m_threadnum;++i)
     {
-        m_threads.push_back(new EventLoopThread());
+        m_threads.push_back(std::make_unique<EventLoopThread>());
     }
 }
 

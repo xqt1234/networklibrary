@@ -36,6 +36,7 @@ namespace mymuduo
         {
             return m_name;
         }
+        bool isConnected(){return m_isconnect;}
         void handNewConnection(int sockfd);
         void setConnectionCallBack(const ConnectionCallBack &cb)
         {

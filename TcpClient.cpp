@@ -28,6 +28,10 @@ TcpClient::~TcpClient()
 
 void TcpClient::connect(bool retry)
 {
+    if(m_timerid.hasSet())
+    {
+        m_loop->cancelTimer(m_timerid);
+    }
     m_retry = retry;
     m_loop->runInLoop([this]{
         m_connector->connect();

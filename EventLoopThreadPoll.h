@@ -13,7 +13,7 @@ namespace mymuduo
     {
     private:
         /* data */
-        std::vector<EventLoopThread *> m_threads;
+        std::vector<std::unique_ptr<EventLoopThread>> m_threads;
         int m_threadnum{0};
         int m_currentLoopNum{0};
         EventLoop *m_baseLoop;
